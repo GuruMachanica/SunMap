@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SunMap - 3D Solar Analysis Visualization</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            overflow: hidden;
+        }
+
+        #container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        #canvas-container {
+            width: 100%;
+            height: 100%;
+        }
+
+                #ui-panel {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+            min-width: 300px;
+            z-index: 100;
+        }
+
+        #ui-panel h1 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+            text-align: center;
+        }
+
+        .control-group {
+            margin-bottom: 15px;
+        }
+
+        .control-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+            font-weight: 500;
+        }
+
+        .control-group input,
+        .control-group select {
+            width: 100%;
+            padding: 8px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        .control-group input:focus,
+        .control-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        button {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f8f9fa;
+            color: #333;
+            border: 2px solid #e0e0e0;
+        }
+
+        .btn-secondary:hover {
+            background: #e9ecef;
+            border-color: #ced4da;
+        }
+
+        #info-panel {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            min-width: 250px;
+            z-index: 100;
+        }
+        #info-panel { display: none; } /* Initially hidden */
+
+        #info-panel h3 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            padding: 5px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .info-item:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            color: #666;
+            font-weight: 500;
+        }
+
+        .info-value {
+            color: #333;
+            font-weight: 600;
+        }
+
+        #loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            z-index: 200;
+            display: none;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        #legend {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            margin-right: 10px;
+        }
+
+        .legend-label {
+            font-size: 12px;
+            color: #555;
+        }
+        /* Pin button custom styling */
+        #infoPinBtn {
+            background: #f0ad4e;
+            color: white;
+            border: none;
+            padding: 6px 8px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        #infoPinBtn:hover { opacity: 0.95; }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <div id="canvas-container"></div>
+
+        <!-- Runtime error overlay (hidden until an error occurs) -->
+        <div id="error-log" style="display:none;position:fixed;right:12px;bottom:12px;max-width:480px;max-height:360px;overflow:auto;background:rgba(0,0,0,0.85);color:#fff;padding:10px;border-radius:6px;font-family:monospace;font-size:12px;z-index:10000;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                <strong>Runtime errors</strong>
+                <div>
+                    <button id="error-clear" style="margin-right:6px;">Clear</button>
+                    <button id="error-close">Close</button>
+                </div>
+            </div>
+            <div id="error-entries"></div>
+        </div>
+        
+        <div id="ui-panel">
+            <h1>🌞 SunMap</h1>
+            
+            <div class="control-group">
+                <label for="dataFile">Solar Data File:</label>
+                <input type="file" id="dataFile" accept=".json,.gml" />
+            </div>
+
+            <div class="control-group">
+                <label for="elevation">Sun Elevation:</label>
+                <input type="range" min="0" max="90" value="45" id="elevation" oninput="changeSun(this.value, document.getElementById('azimuth').value)">
+            </div>
+
+            <div class="control-group">
+                <label for="azimuth">Sun Azimuth:</label>
+                <input type="range" min="0" max="360" value="135" id="azimuth" oninput="changeSun(document.getElementById('elevation').value, this.value)">
+            </div>
+            
+            <div class="control-group">
+                <label for="visualizationMode">Visualization Mode:</label>
+                <select id="visualizationMode">
+                    <option value="irradiation">Solar Irradiation</option>
+                    <option value="efficiency">Solar Efficiency</option>
+                    <option value="area">Roof Area</option>
+                    <option value="tilt">Roof Tilt</option>
+                </select>
+            </div>
+            
+            <div class="control-group">
+                <label for="colorScheme">Color Scheme:</label>
+                <select id="colorScheme">
+                    <option value="heatmap">Heat Map</option>
+                    <option value="viridis">Viridis</option>
+                    <option value="plasma">Plasma</option>
+                    <option value="rainbow">Rainbow</option>
+                </select>
+            </div>
+            
+            <div class="button-group">
+                <button class="btn-primary" onclick="loadData()">Load Data</button>
+                <button class="btn-secondary" onclick="resetView()">Reset View</button>
+                <button class="btn-secondary" onclick="zoomIn()">Zoom In</button>
+                <button class="btn-secondary" onclick="zoomOut()">Zoom Out</button>
+            </div>
+
+            <div class="control-group" style="margin-top:10px;">
+                <label for="enableOcclusion">Enable Occlusion (shadows):</label>
+                <input type="checkbox" id="enableOcclusion" onchange="setOcclusion(this.checked)" />
+            </div>
+
+            <div class="button-group" style="margin-top:10px;">
+                <button id="animateSunBtn" class="btn-primary" onclick="toggleSunAnimation()">Play Sun</button>
+            </div>
+
+            <div class="control-group" style="margin-top:10px;">
+                <label for="sunSpeed">Sun Animation Speed (deg/frame): <span id="sunSpeedVal">1</span></label>
+                <input type="range" id="sunSpeed" min="0.1" max="10" step="0.1" value="1" oninput="setSunSpeed(this.value); document.getElementById('sunSpeedVal').textContent=this.value" />
+            </div>
+
+            <div class="control-group" style="margin-top:10px;">
+                <label for="elevSweep">Enable Elevation Sweep:</label>
+                <input type="checkbox" id="elevSweep" onchange="setElevationSweepEnabled(this.checked)" />
+                <div style="display:flex; gap:8px; margin-top:8px;">
+                    <label>Min El: <input type="number" id="elevMin" value="15" min="0" max="90" onchange="setElevationRange()" style="width:72px;"/></label>
+                    <label>Max El: <input type="number" id="elevMax" value="60" min="0" max="90" onchange="setElevationRange()" style="width:72px;"/></label>
+                </div>
+            </div>
+
+            <div class="control-group" style="margin-top:10px;">
+                <label for="occlusionSamples">Occlusion Samples per Roof:</label>
+                <input type="number" id="occlusionSamples" min="1" max="9" value="1" onchange="setOcclusionSamples(this.value)" style="width:80px;" />
+            </div>
+
+            <div class="control-group" style="margin-top:10px;">
+                <label for="daylightHours">Effective Daylight Hours (for daily est.):</label>
+                <input type="number" id="daylightHours" min="1" max="12" value="6" onchange="setDaylightHours(this.value)" style="width:80px;" />
+            </div>
+
+            <div class="control-group" style="margin-top:10px;">
+                <label for="infoAutoHide">Info Panel Auto-hide (ms):</label>
+                <input type="number" id="infoAutoHide" min="0" step="100" value="2000" onchange="setInfoAutoHide(this.value)" style="width:120px;" />
+            </div>
+        </div>
+        <div id="status-panel" style="position:absolute; bottom:20px; left:20px; background:rgba(255,255,255,0.9); padding:10px; border-radius:8px; z-index:110;">
+            <div><strong>Status</strong></div>
+            <div id="status-buildings">Buildings: --</div>
+            <div id="status-elevation">Elevation: --</div>
+            <div id="status-azimuth">Azimuth: --</div>
+        </div>
+        
+        
+        <div id="legend">
+            <h4 id="legend-title" style="margin-bottom: 10px; color: #333;">Solar Irradiation</h4>
+            <div id="legend-content">
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #440154;"></div>
+                    <span class="legend-label">Low (0-400 kWh/m²)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #31688e;"></div>
+                    <span class="legend-label">Medium (400-800 kWh/m²)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #35b779;"></div>
+                    <span class="legend-label">High (800-1200 kWh/m²)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #fde725;"></div>
+                    <span class="legend-label">Very High (1200+ kWh/m²)</span>
+                </div>
+            </div>
+        </div>
+        
+        <div id="info-panel">
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:8px;">
+                <h3 style="margin:0">Building Information</h3>
+                <div style="display:flex; gap:6px;">
+                    <button id="infoPinBtn" onclick="toggleInfoPin()" style="background:#f0ad4e;color:white;border:none;padding:6px 8px;border-radius:6px;cursor:pointer">Pin</button>
+                    <button onclick="closeInfoPanel()" style="background:#ff6b6b;color:white;border:none;padding:6px 8px;border-radius:6px;cursor:pointer">Close</button>
+                </div>
+            </div>
+            <div id="info-content" style="margin-top:10px;">
+                <div style="font-weight:600; margin-bottom:8px">Building: <span id="info-building-id">--</span></div>
+                <div class="info-item"><span class="info-label">Avg. Irradiation:</span> <span id="info-avg-irr" class="info-value">-- kWh/m²</span></div>
+                <div class="info-item"><span class="info-label">Total Roof Area:</span> <span id="info-total-area" class="info-value">-- m²</span></div>
+                <div class="info-item"><span class="info-label">Total Potential (annual):</span> <span id="info-annual-potential" class="info-value">-- MWh/yr</span></div>
+                <div class="info-item"><span class="info-label">Instant Power:</span> <span id="info-instant-kw" class="info-value">-- kW</span></div>
+                <div class="info-item"><span class="info-label">Hourly Estimate:</span> <span id="info-hourly-kwh" class="info-value">-- kWh</span></div>
+                <div class="info-item"><span class="info-label">Daily Estimate:</span> <span id="info-daily-kwh" class="info-value">-- kWh</span></div>
+                <div class="info-item"><span class="info-label">Roof Surfaces:</span> <span id="info-roof-count" class="info-value">--</span></div>
+            </div>
+        </div>
+        
+        <div id="loading">
+            <div class="spinner"></div>
+            <p>Loading solar data...</p>
+        </div>
+    </div>
+
+    <!-- Load local Three.js (works offline). If you want the CDN again, replace this with the CDN link. -->
+    <script src="js/three.min.js"></script>
+    <script>
+        // Check if Three.js loaded correctly
+        if (typeof THREE === 'undefined') {
+            console.error('Three.js failed to load');
+            document.body.innerHTML = '<div style="text-align: center; padding: 50px; color: red;">\n                <h2>Error: Three.js library failed to load</h2>\n                <p>Please check your installation and ensure <code>js/three.min.js</code> exists, then refresh the page.</p>\n            </div>';
+        } else {
+            console.log('Three.js loaded successfully', THREE.REVISION ? ('version: ' + THREE.REVISION) : '');
+        }
+    </script>
+    <script src="app.js"></script>
+    <script>
+        (function () {
+            const logEl = document.getElementById('error-log');
+            const entriesEl = document.getElementById('error-entries');
+            const clearBtn = document.getElementById('error-clear');
+            const closeBtn = document.getElementById('error-close');
+
+            function showLog() { logEl.style.display = 'block'; }
+            function hideLog() { logEl.style.display = 'none'; }
+            function addEntry(msg) {
+                showLog();
+                const div = document.createElement('div');
+                div.style.borderTop = '1px solid rgba(255,255,255,0.06)';
+                div.style.paddingTop = '6px';
+                div.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
+                entriesEl.insertBefore(div, entriesEl.firstChild);
+                while (entriesEl.childNodes.length > 50) entriesEl.removeChild(entriesEl.lastChild);
+            }
+
+            window.addEventListener('error', function (ev) {
+                const msg = ev.message || (ev.error && ev.error.toString()) || 'Unknown error';
+                addEntry(msg + ' (at ' + (ev.filename || '') + ':' + (ev.lineno || '') + ')');
+            });
+
+            window.addEventListener('unhandledrejection', function (ev) {
+                addEntry('UnhandledPromiseRejection: ' + (ev.reason && ev.reason.toString ? ev.reason.toString() : JSON.stringify(ev.reason)));
+            });
+
+            const originalConsoleError = console.error.bind(console);
+            console.error = function () {
+                try {
+                    const args = Array.from(arguments).map(a => (typeof a === 'object' ? JSON.stringify(a) : String(a))).join(' ');
+                    addEntry('console.error: ' + args);
+                } catch (e) { }
+                originalConsoleError.apply(null, arguments);
+            };
+
+            if (clearBtn) clearBtn.addEventListener('click', function () { entriesEl.innerHTML = ''; });
+            if (closeBtn) closeBtn.addEventListener('click', hideLog);
+        })();
+    </script>
+</body>
+</html>

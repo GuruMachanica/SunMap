@@ -1,0 +1,664 @@
+{
+  "buildings": [
+    {
+      "id": "building_001",
+      "type": "industrial_building",
+      "position": {
+        "x": -89.3,
+        "y": 0,
+        "z": -78.6
+      },
+      "dimensions": {
+        "width": 53.6,
+        "height": 11.6,
+        "depth": 40.4
+      },
+      "roofSurfaces": [
+        {
+          "id": "roof_sawtooth_1",
+          "area": 432.3,
+          "azimuth": 180,
+          "tilt": 7.07672377364365,
+          "irradiation": 1033.7,
+          "totalIrradiation": 446868.51
+        },
+        {
+          "id": "roof_sawtooth_2",
+          "area": 432.3,
+          "azimuth": 180,
+          "tilt": 8.728086422971455,
+          "irradiation": 1154.6,
+          "totalIrradiation": 499133.57999999996
+        },
+        {
+          "id": "roof_sawtooth_3",
+          "area": 432.3,
+          "azimuth": 180,
+          "tilt": 13.052870103246507,
+          "irradiation": 1199.8,
+          "totalIrradiation": 518673.54
+        },
+        {
+          "id": "roof_sawtooth_4",
+          "area": 432.3,
+          "azimuth": 180,
+          "tilt": 6.586467170588806,
+          "irradiation": 991.2,
+          "totalIrradiation": 428495.76
+        },
+        {
+          "id": "roof_sawtooth_5",
+          "area": 432.3,
+          "azimuth": 180,
+          "tilt": 10.714803592777717,
+          "irradiation": 1100.7,
+          "totalIrradiation": 475832.61000000004
+        }
+      ]
+    },
+    {
+      "id": "building_002",
+      "type": "commercial_building",
+      "position": {
+        "x": -8.1,
+        "y": 0,
+        "z": -90.1
+      },
+      "dimensions": {
+        "width": 27.0,
+        "height": 12.3,
+        "depth": 47.3
+      },
+      "roofSurfaces": [
+        {
+          "id": "roof_flat_001",
+          "area": 1278.2,
+          "azimuth": 316.22819369757644,
+          "tilt": 1.0657818979268774,
+          "irradiation": 200,
+          "totalIrradiation": 255640.0
+        }
+      ]
+    },
+    {
+      "id": "building_003",
+      "type": "residential_house",
+      "position": {
+        "x": 55.4,
+        "y": 0,
+        "z": -45.5
+      },
+      "dimensions": {
+        "width": 11.6,
+        "height": 10.0,
+        "depth": 13.6
+      },
+      "roofSurfaces": [
+        {
+          "id": "roof_gabled_south",
+          "area": 79.6,
+          "azimuth": 180,
+          "tilt": 34.9484463041985,
+          "irradiation": 1198.0,
+          "totalIrradiation": 95360.79999999999
+        },
+        {
+          "id": "roof_gabled_north",
+          "area": 79.6,
+          "azimuth": 0,
+          "tilt": 35.582210552340214,
+          "irradiation": 200,
+          "totalIrradiation": 15919.999999999998
+        }
+      ]
+    },
+    {
+      "id": "building_004",
+      "type": "residential_house",
+      "position": {
+        "x": 93.6,
+        "y": 0,
+        "z": -84.3
+      },
+      "dimensions": {
+        "width": 9.5,
+        "height": 6.1,
+        "depth": 14.2
+      },
+      "roofSurfaces": [
+        {
+          "id": "roof_hipped_1",
+          "area": 40.3,
+          "azimuth": 180,
+          "tilt": 34.43720992339206,
+          "irradiation": 1161.4,
+          "totalIrradiation": 46804.42
+        },
+        {
+          "id": "roof_hipped_2",
+          "area": 40.3,
+          "azimuth": 270,
+          "tilt": 38.108580809080365,
+          "irradiation": 200,
+          "totalIrradiation": 8059.999999999999
+        },
+        {
+          "id": "roof_hipped_3",
+          "area": 40.3,
+          "azimuth": 0,
+          "tilt": 44.66324799283732,
+          "irradiation": 200,
+          "totalIrradiation": 8059.999999999999
+        },
+        {
+          "id": "roof_hipped_4",
+          "area": 40.3,
+          "azimuth": 90,
+          "tilt": 34.28592716928832,
+          "irradiation": 200,
+          "totalIrradiation": 8059.999999999999
+        }
+      ]
+    },
+    {
+      "id": "building_005",
+      "type": "apartment_building",
+      "position": {
+        "x": 97.9,
+        "y": 0,
+        "z": -49.7
+      },
+      "dimensions": {
+        "width": 16.0,
+        "height": 18.1,
+        "depth": 34.1
+      },
+      "roofSurfaces": [
+        {
+          "id": "roof_gabled_south",
+          "area": 273.7,
+          "azimuth": 180,
+          "tilt": 0.9885266654441471,
+          "irradiation": 1052.9,
+          "totalIrradiation": 288178.73000000004
+        },
+        {
+          "id": "roof_gabled_north",
+          "area": 273.7,
+          "azimuth": 0,
+          "tilt": 14.487558836614966,
+          "irradiation": 200,
+          "totalIrradiation": 54740.0
+        }
+      ]
+    },
+    {
+      "id": "building_006",
+      "type": "commercial_building",
+      "position": {
+        "x": -57.5,
+        "y": 0,
+        "z": -90.6
+      },
+      "dimensions": {
+        "width": 28.2,
+        "height": 21.3,
+        "depth": 43.0
+      },
+      "roofSurfaces": [
+        {
+          "id": "roof_shed_001",
+          "area": 1212.6,
+          "azimuth": 90,
+          "tilt": 4.677159274630396,
+          "irradiation": 200,
+          "totalIrradiation": 242519.99999999997
+        }
+      ]
+    },
+    {
+      "id": "building_007",
+      "type": "commercial_building",
+      "position": {
+        "x": -70.7,
+        "y": 0,
+        "z": 12.3
+      },
+      "dimensions": {
+        "width": 23.9,
+        "height": 20.4,
+        "depth": 42.4
+      },
+      "roofSurfaces": [
+        {
+          "id": "roof_flat_001",
+          "area": 1012.3,
+          "azimuth": 105.28341742022334,
+          "tilt": 4.831886626338148,
+          "irradiation": 296.2,
+          "totalIrradiation": 299843.25999999995
+        }
+      ]
+    },
+    {
+      "id": "building_008",
+      "type": "commercial_building",
+      "position": {
+        "x": 64.2,
+        "y": 0,
+        "z": 74.7
+      },
+      "dimensions": {
+        "width": 36.9,
+        "height": 18.6,
+        "depth": 42.1
+      },
+      "roofSurfaces": [
+        {
+          "id": "roof_shed_001",
+          "area": 1552.9,
+          "azimuth": 180,
+          "tilt": 8.315857886794564,
+          "irradiation": 1179.7,
+          "totalIrradiation": 1831956.1300000001
+        }
+      ]
+    },
+    {
+      "id": "building_009",
+      "type": "residential_house",
+      "position": {
+        "x": -48.2,
+        "y": 0,
+        "z": 98.5
+      },
+      "dimensions": {
+        "width": 10.2,
+        "height": 9.7,
+        "depth": 14.5
+      },
+      "roofSurfaces": [
+        {
+          "id": "roof_hipped_1",
+          "area": 44.7,
+          "azimuth": 180,
+          "tilt": 31.465091782450784,
+          "irradiation": 1204.0,
+          "totalIrradiation": 53818.8
+        },
+        {
+          "id": "roof_hipped_2",
+          "area": 44.7,
+          "azimuth": 270,
+          "tilt": 30.676226229570087,
+          "irradiation": 200,
+          "totalIrradiation": 8940.0
+        },
+        {
+          "id": "roof_hipped_3",
+          "area": 44.7,
+          "azimuth": 0,
+          "tilt": 30.06789669422911,
+          "irradiation": 200,
+          "totalIrradiation": 8940.0
+        },
+        {
+          "id": "roof_hipped_4",
+          "area": 44.7,
+          "azimuth": 90,
+          "tilt": 38.67815042118801,
+          "irradiation": 200,
+          "totalIrradiation": 8940.0
+        }
+      ]
+    },
+    {
+      "id": "building_010",
+      "type": "apartment_building",
+      "position": {
+        "x": 95.2,
+        "y": 0,
+        "z": -73.5
+      },
+      "dimensions": {
+        "width": 23.7,
+        "height": 26.0,
+        "depth": 28.6
+      },
+      "roofSurfaces": [
+        {
+          "id": "roof_flat_001",
+          "area": 676.2,
+          "azimuth": 291.43966204839757,
+          "tilt": 1.7532632934530579,
+          "irradiation": 200,
+          "totalIrradiation": 135240.0
+        }
+      ]
+    },
+    {
+      "id": "building_011",
+      "type": "industrial_building",
+      "position": {
+        "x": -59.0,
+        "y": 0,
+        "z": 87.8
+      },
+      "dimensions": {
+        "width": 36.7,
+        "height": 12.7,
+        "depth": 54.4
+      },
+      "roofSurfaces": [
+        {
+          "id": "roof_sawtooth_1",
+          "area": 665.7,
+          "azimuth": 180,
+          "tilt": 10.59491219142527,
+          "irradiation": 1170.9,
+          "totalIrradiation": 779468.1300000001
+        },
+        {
+          "id": "roof_sawtooth_2",
+          "area": 665.7,
+          "azimuth": 180,
+          "tilt": 15.23090778358372,
+          "irradiation": 1224.3,
+          "totalIrradiation": 815016.51
+        },
+        {
+          "id": "roof_sawtooth_3",
+          "area": 665.7,
+          "azimuth": 180,
+          "tilt": 18.80994496340376,
+          "irradiation": 1090.6,
+          "totalIrradiation": 726012.42
+        }
+      ]
+    },
+    {
+      "id": "building_012",
+      "type": "apartment_building",
+      "position": {
+        "x": -18.4,
+        "y": 0,
+        "z": -27.6
+      },
+      "dimensions": {
+        "width": 20.5,
+        "height": 20.0,
+        "depth": 27.4
+      },
+      "roofSurfaces": [
+        {
+          "id": "roof_gabled_south",
+          "area": 282.7,
+          "azimuth": 180,
+          "tilt": 3.3385282048357356,
+          "irradiation": 1138.7,
+          "totalIrradiation": 321910.49
+        },
+        {
+          "id": "roof_gabled_north",
+          "area": 282.7,
+          "azimuth": 0,
+          "tilt": 2.004980449122011,
+          "irradiation": 200,
+          "totalIrradiation": 56540.0
+        }
+      ]
+    },
+    {
+      "id": "building_013",
+      "type": "industrial_building",
+      "position": {
+        "x": -1.5,
+        "y": 0,
+        "z": 52.6
+      },
+      "dimensions": {
+        "width": 58.8,
+        "height": 9.3,
+        "depth": 74.2
+      },
+      "roofSurfaces": [
+        {
+          "id": "roof_sawtooth_1",
+          "area": 872.1,
+          "azimuth": 180,
+          "tilt": 12.72366740465051,
+          "irradiation": 1176.6,
+          "totalIrradiation": 1026112.86
+        },
+        {
+          "id": "roof_sawtooth_2",
+          "area": 872.1,
+          "azimuth": 180,
+          "tilt": 11.98714364782371,
+          "irradiation": 1052.6,
+          "totalIrradiation": 917972.46
+        },
+        {
+          "id": "roof_sawtooth_3",
+          "area": 872.1,
+          "azimuth": 180,
+          "tilt": 6.125383419693911,
+          "irradiation": 1176.5,
+          "totalIrradiation": 1026025.65
+        },
+        {
+          "id": "roof_sawtooth_4",
+          "area": 872.1,
+          "azimuth": 180,
+          "tilt": 14.408947140258634,
+          "irradiation": 1240.5,
+          "totalIrradiation": 1081840.05
+        },
+        {
+          "id": "roof_sawtooth_5",
+          "area": 872.1,
+          "azimuth": 180,
+          "tilt": 10.9670052006276,
+          "irradiation": 1109.9,
+          "totalIrradiation": 967943.7900000002
+        }
+      ]
+    },
+    {
+      "id": "building_014",
+      "type": "commercial_building",
+      "position": {
+        "x": -0.3,
+        "y": 0,
+        "z": 71.4
+      },
+      "dimensions": {
+        "width": 34.1,
+        "height": 16.6,
+        "depth": 44.4
+      },
+      "roofSurfaces": [
+        {
+          "id": "roof_flat_001",
+          "area": 1515.3,
+          "azimuth": 141.74393166620033,
+          "tilt": 4.294892491173707,
+          "irradiation": 862.6,
+          "totalIrradiation": 1307097.78
+        }
+      ]
+    },
+    {
+      "id": "building_015",
+      "type": "apartment_building",
+      "position": {
+        "x": -68.5,
+        "y": 0,
+        "z": -39.8
+      },
+      "dimensions": {
+        "width": 20.0,
+        "height": 22.9,
+        "depth": 34.1
+      },
+      "roofSurfaces": [
+        {
+          "id": "roof_flat_001",
+          "area": 681.6,
+          "azimuth": 284.7161611559234,
+          "tilt": 2.45379442733253,
+          "irradiation": 200,
+          "totalIrradiation": 136320.0
+        }
+      ]
+    },
+    {
+      "id": "building_016",
+      "type": "commercial_building",
+      "position": {
+        "x": 93.7,
+        "y": 0,
+        "z": 67.1
+      },
+      "dimensions": {
+        "width": 26.1,
+        "height": 10.6,
+        "depth": 49.7
+      },
+      "roofSurfaces": [
+        {
+          "id": "roof_shed_001",
+          "area": 1294.1,
+          "azimuth": 270,
+          "tilt": 4.513278120254731,
+          "irradiation": 200,
+          "totalIrradiation": 258819.99999999997
+        }
+      ]
+    },
+    {
+      "id": "building_017",
+      "type": "apartment_building",
+      "position": {
+        "x": 84.7,
+        "y": 0,
+        "z": 87.5
+      },
+      "dimensions": {
+        "width": 23.9,
+        "height": 25.9,
+        "depth": 32.0
+      },
+      "roofSurfaces": [
+        {
+          "id": "roof_flat_001",
+          "area": 764.8,
+          "azimuth": 80.81693754546289,
+          "tilt": 0.728335275685803,
+          "irradiation": 200,
+          "totalIrradiation": 152960.0
+        }
+      ]
+    },
+    {
+      "id": "building_018",
+      "type": "residential_house",
+      "position": {
+        "x": -46.4,
+        "y": 0,
+        "z": -27.9
+      },
+      "dimensions": {
+        "width": 10.5,
+        "height": 9.9,
+        "depth": 12.8
+      },
+      "roofSurfaces": [
+        {
+          "id": "roof_gabled_south",
+          "area": 70.2,
+          "azimuth": 180,
+          "tilt": 30.930103206716154,
+          "irradiation": 1177.7,
+          "totalIrradiation": 82674.54000000001
+        },
+        {
+          "id": "roof_gabled_north",
+          "area": 70.2,
+          "azimuth": 0,
+          "tilt": 36.775058662492796,
+          "irradiation": 200,
+          "totalIrradiation": 14040.0
+        }
+      ]
+    },
+    {
+      "id": "building_019",
+      "type": "commercial_building",
+      "position": {
+        "x": 44.3,
+        "y": 0,
+        "z": 19.3
+      },
+      "dimensions": {
+        "width": 36.9,
+        "height": 12.7,
+        "depth": 28.0
+      },
+      "roofSurfaces": [
+        {
+          "id": "roof_flat_001",
+          "area": 1033.4,
+          "azimuth": 61.8016022935348,
+          "tilt": 2.5172231341045386,
+          "irradiation": 200,
+          "totalIrradiation": 206680.00000000003
+        }
+      ]
+    },
+    {
+      "id": "building_020",
+      "type": "apartment_building",
+      "position": {
+        "x": -33.1,
+        "y": 0,
+        "z": -65.4
+      },
+      "dimensions": {
+        "width": 16.3,
+        "height": 15.2,
+        "depth": 21.8
+      },
+      "roofSurfaces": [
+        {
+          "id": "roof_flat_001",
+          "area": 356.1,
+          "azimuth": 279.24396340284045,
+          "tilt": 0.6838793472277177,
+          "irradiation": 200,
+          "totalIrradiation": 71220.0
+        }
+      ]
+    }
+  ],
+  "metadata": {
+    "generated_at": "2025-10-11T10:13:17.426723",
+    "location": {
+      "latitude": 52.01,
+      "longitude": 4.36,
+      "city": "Delft, Netherlands"
+    },
+    "statistics": {
+      "totalBuildings": 20,
+      "totalSurfaces": 40,
+      "totalArea": 21649.0,
+      "avgIrradiation": 724.7,
+      "buildingTypes": {
+        "residential": 4,
+        "apartment": 6,
+        "commercial": 7,
+        "industrial": 3
+      }
+    }
+  }
+}

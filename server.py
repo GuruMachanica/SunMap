@@ -24,24 +24,46 @@ def open_browser():
     webbrowser.open('http://localhost:8000')
 
 def main():
-    PORT = 8000
-    
+    # Try to bind to a free port starting at 8000
+    START_PORT = 8000
+    MAX_PORT = 8010
+
     # Change to the directory containing the HTML files
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
-    
-    with socketserver.TCPServer(("", PORT), CustomHTTPRequestHandler) as httpd:
+
+    httpd = None
+    chosen_port = None
+    for PORT in range(START_PORT, MAX_PORT + 1):
+        try:
+            httpd = socketserver.TCPServer(("", PORT), CustomHTTPRequestHandler)
+            chosen_port = PORT
+            break
+        except OSError as e:
+            # Port in use, try next
+            print(f"Port {PORT} unavailable: {e}")
+            continue
+
+    if httpd is None:
+        print(f"Unable to bind to any port in range {START_PORT}-{MAX_PORT}. Exiting.")
+        return
+
+    try:
         print(f"🌞 SunMap Frontend Server")
-        print(f"Server running at http://localhost:{PORT}")
+        print(f"Server running at http://localhost:{chosen_port}")
         print(f"Serving files from: {os.getcwd()}")
         print("\nPress Ctrl+C to stop the server")
-        
-        # Open browser after 1 second
-        Timer(1.0, open_browser).start()
-        
+
+        # Open browser after 1 second (point to chosen port)
+        Timer(1.0, lambda: webbrowser.open(f'http://localhost:{chosen_port}')).start()
+
+        httpd.serve_forever()
+    except KeyboardInterrupt:
+        print("\nServer stopped.")
+    finally:
         try:
-            httpd.serve_forever()
-        except KeyboardInterrupt:
-            print("\nServer stopped.")
+            httpd.server_close()
+        except Exception:
+            pass
 
 if __name__ == '__main__':
     main()

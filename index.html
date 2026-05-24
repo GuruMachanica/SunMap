@@ -245,6 +245,12 @@
             <div class="control-group">
                 <label for="dataFile">Solar Data File:</label>
                 <input type="file" id="dataFile" accept=".json,.gml" />
+                <div style="margin-top:8px; display:flex; gap:8px;">
+                    <button class="btn-secondary" onclick="loadSample('solar_data.json')">Load shipped data</button>
+                    <button class="btn-secondary" onclick="loadSample('realistic_buildings.json')">Load realistic data</button>
+                    <button class="btn-secondary" onclick="openReadme()">Help / README</button>
+                </div>
+                <div style="margin-top:8px; font-size:12px; color:#666;">Tip: drag & drop a JSON file onto the canvas to load it.</div>
             </div>
 
             <div class="control-group">
@@ -310,6 +316,21 @@
             <div class="control-group" style="margin-top:10px;">
                 <label for="occlusionSamples">Occlusion Samples per Roof:</label>
                 <input type="number" id="occlusionSamples" min="1" max="9" value="1" onchange="setOcclusionSamples(this.value)" style="width:80px;" />
+            </div>
+
+            <div class="control-group" style="margin-top:10px;">
+                <label>Layers:</label>
+                <div style="display:flex; gap:8px; align-items:center;">
+                    <label><input type="checkbox" id="toggleBuildings" checked onchange="toggleBuildings(this.checked)"> Buildings</label>
+                    <label><input type="checkbox" id="toggleRoofs" checked onchange="toggleRoofs(this.checked)"> Roofs</label>
+                    <label><input type="checkbox" id="toggleShadows" checked onchange="toggleShadows(this.checked)"> Shadows</label>
+                </div>
+            </div>
+
+            <div class="control-group" style="margin-top:10px;">
+                <label for="shadowMapSize">Shadow Map Size:</label>
+                <input type="range" id="shadowMapSize" min="256" max="4096" step="256" value="4096" oninput="setShadowMapSize(this.value); document.getElementById('shadowMapSizeVal').textContent=this.value" />
+                <div style="font-size:12px; color:#666; margin-top:6px;">Current: <span id="shadowMapSizeVal">4096</span></div>
             </div>
 
             <div class="control-group" style="margin-top:10px;">

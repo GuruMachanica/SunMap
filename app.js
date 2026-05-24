@@ -353,6 +353,9 @@ class SunMapVisualizer {
         
         // Create main building mesh
         const mainMesh = new THREE.Mesh(geometry, material);
+        // mark main building body for layer toggles
+        mainMesh.userData = mainMesh.userData || {};
+        mainMesh.userData.isBuildingBody = true;
         mainMesh.position.set(0, dimensions.height / 2, 0);
         mainMesh.castShadow = true;
         mainMesh.receiveShadow = true;
@@ -532,6 +535,10 @@ class SunMapVisualizer {
                 roofSurface: surface,
                 baseIrradiation: surface.irradiation
             };
+            // mark as roof for layer toggles and allow shadows
+            roofPlane.userData.isRoof = true;
+            roofPlane.castShadow = true;
+            roofPlane.receiveShadow = true;
 
             buildingGroup.add(roofPlane);
         });
@@ -1197,6 +1204,112 @@ function loadData() {
     reader.readAsText(file);
 }
 
+// Load a shipped sample JSON by filename (e.g. solar_data.json)
+function loadSample(filename) {
+    if (!visualizer) { alert('Visualizer not ready yet'); return; }
+    document.getElementById('loading').style.display = 'block';
+    fetch(filename).then(resp => {
+        if (!resp.ok) throw new Error('File not found: ' + filename);
+        return resp.json();
+    }).then(data => {
+        if (!data.buildings || !Array.isArray(data.buildings)) throw new Error('Invalid data format');
+        visualizer.loadBuildings(data.buildings);
+        document.getElementById('loading').style.display = 'none';
+    }).catch(err => {
+        document.getElementById('loading').style.display = 'none';
+        alert('Error loading sample: ' + err.message);
+    });
+}
+
+// Set shadow map resolution (updates shadow camera and requests shadow map update)
+function setShadowMapSize(val) {
+    if (!visualizer || !visualizer.sunLight) return;
+    const size = Math.max(128, Math.min(8192, Math.round(Number(val) || 1024)));
+    try {
+        visualizer.sunLight.shadow.mapSize.width = size;
+        visualizer.sunLight.shadow.mapSize.height = size;
+        if (visualizer.sunLight.shadow.map) {
+            visualizer.sunLight.shadow.map.dispose();
+            visualizer.sunLight.shadow.map = null;
+        }
+        if (visualizer.renderer && visualizer.renderer.shadowMap) visualizer.renderer.shadowMap.needsUpdate = true;
+        visualizer.updateSunShadowFrustum();
+    } catch (e) { console.warn('Failed to set shadow map size', e); }
+    const el = document.getElementById('shadowMapSizeVal'); if (el) el.textContent = size;
+}
+
+// Layer toggle helpers
+function toggleBuildings(visible) {
+    if (!visualizer) return;
+    visualizer.buildings.forEach(b => {
+        if (!b.mesh) return;
+        b.mesh.traverse(child => {
+            if (child.userData && child.userData.isBuildingBody) {
+                child.visible = !!visible;
+            }
+        });
+    });
+}
+
+function toggleRoofs(visible) {
+    if (!visualizer) return;
+    visualizer.buildings.forEach(b => {
+        if (!b.mesh) return;
+        b.mesh.traverse(child => {
+            if (child.userData && child.userData.isRoof) {
+                child.visible = !!visible;
+            }
+        });
+    });
+}
+
+function toggleShadows(enabled) {
+    if (!visualizer) return;
+    try {
+        const on = !!enabled;
+        if (visualizer.renderer) visualizer.renderer.shadowMap.enabled = on;
+        if (visualizer.sunLight) visualizer.sunLight.castShadow = on;
+        // update all meshes receive/cast properties for consistency
+        visualizer.buildings.forEach(b => {
+            if (!b.mesh) return;
+            b.mesh.traverse(child => {
+                if (child.isMesh) {
+                    child.castShadow = on && (child.userData && child.userData.isRoof ? true : child.userData && child.userData.isBuildingBody ? true : child.castShadow);
+                    child.receiveShadow = on;
+                }
+            });
+        });
+    } catch (e) { console.warn('toggleShadows error', e); }
+}
+
+// Enable drag & drop loading on the canvas container
+function enableDragDrop() {
+    const container = document.getElementById('canvas-container');
+    if (!container) return;
+    container.addEventListener('dragover', (e) => { e.preventDefault(); container.style.outline = '3px dashed rgba(102,126,234,0.6)'; });
+    container.addEventListener('dragleave', (e) => { container.style.outline = 'none'; });
+    container.addEventListener('drop', (e) => {
+        e.preventDefault(); container.style.outline = 'none';
+        const file = e.dataTransfer.files && e.dataTransfer.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function(ev) {
+            try {
+                const data = JSON.parse(ev.target.result);
+                if (!data.buildings || !Array.isArray(data.buildings)) throw new Error('Invalid file format');
+                visualizer.loadBuildings(data.buildings);
+            } catch (err) {
+                alert('Error loading dropped file: ' + err.message);
+            }
+        };
+        reader.readAsText(file);
+    });
+}
+
+function openReadme() {
+    try { window.open('README.md', '_blank'); } catch (e) { alert('Unable to open README'); }
+}
+
 function resetView() {
     if (visualizer) {
         visualizer.resetView();
@@ -1378,6 +1491,12 @@ document.addEventListener('DOMContentLoaded', function() {
     try {
         visualizer = new SunMapVisualizer();
         console.log('SunMap visualizer initialized successfully');
+        // Wire additional UI niceties
+        enableDragDrop();
+        // initialize shadow size display to current value
+        const initialShadow = visualizer.sunLight && visualizer.sunLight.shadow && visualizer.sunLight.shadow.mapSize ? visualizer.sunLight.shadow.mapSize.width : 4096;
+        const sv = document.getElementById('shadowMapSize'); if (sv) sv.value = initialShadow;
+        const sVal = document.getElementById('shadowMapSizeVal'); if (sVal) sVal.textContent = initialShadow;
     } catch (error) {
         console.error('Error initializing visualizer:', error);
         alert('Error initializing 3D visualizer: ' + error.message);

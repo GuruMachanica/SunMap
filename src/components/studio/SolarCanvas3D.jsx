@@ -1,5 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import topologiesData from "../../datasets/topologies_dataset.json";
+import { MapPin, Globe, Sun, Layers } from "lucide-react";
 
 const CAMERA_PRESETS = [
   { id: "orbit", label: "Neighborhood 3D", pos: [38, 28, 44], target: [0, 4, 0] },
@@ -24,6 +26,8 @@ const SolarCanvas3D = ({
   const modelsGroupRef = useRef(null);
   const solarPanelsRef = useRef([]);
   const [activeCamPreset, setActiveCamPreset] = useState("orbit");
+
+  const currentTopology = topologiesData.topologies[scenePreset] || topologiesData.topologies.commercial;
 
   useEffect(() => {
     const currentMount = mountRef.current;
@@ -213,6 +217,7 @@ const SolarCanvas3D = ({
     }
   }, [elevation, azimuth]);
 
+  // Load 3D Meshes from topologiesData
   useEffect(() => {
     if (!modelsGroupRef.current) return;
     const group = modelsGroupRef.current;
@@ -274,7 +279,6 @@ const SolarCanvas3D = ({
       group.add(car);
     };
 
-    let panelsCount = 0;
     const addSolarArray = (startX, startZ, rows, cols, panelW, panelD, roofY, baseTiltRad = 0) => {
       const activeTilt = baseTiltRad !== 0 ? baseTiltRad : (panelTilt * Math.PI) / 180;
       for (let r = 0; r < rows; r++) {
@@ -291,108 +295,77 @@ const SolarCanvas3D = ({
           panelMesh.receiveShadow = true;
           group.add(panelMesh);
           solarPanelsRef.current.push(panelMesh);
-          panelsCount++;
         }
       }
     };
 
-    let totalRooftopArea = 0;
+    const topo = topologiesData.topologies[scenePreset] || topologiesData.topologies.commercial;
 
-    if (scenePreset === "commercial") {
-      const b1 = new THREE.Mesh(new THREE.BoxGeometry(18, 14, 18), getBuildingMat(0x1e293b));
-      b1.position.set(-6, 7, -2);
-      b1.castShadow = true;
-      b1.receiveShadow = true;
-      group.add(b1);
+    if (topo.buildings) {
+      topo.buildings.forEach((b) => {
+        if (b.isGlass) {
+          const bridge = new THREE.Mesh(new THREE.BoxGeometry(b.dimensions.width, b.dimensions.height, b.dimensions.depth), glassMat);
+          bridge.position.set(b.position.x, b.position.y, b.position.z);
+          group.add(bridge);
+          return;
+        }
 
-      const glass1 = new THREE.Mesh(new THREE.BoxGeometry(18.2, 10, 18.2), glassMat);
-      glass1.position.set(-6, 8, -2);
-      group.add(glass1);
+        const mesh = new THREE.Mesh(
+          new THREE.BoxGeometry(b.dimensions.width, b.dimensions.height, b.dimensions.depth),
+          getBuildingMat(b.wallColor || 0x1e293b)
+        );
+        mesh.position.set(b.position.x, b.position.y, b.position.z);
+        mesh.castShadow = true;
+        mesh.receiveShadow = true;
+        group.add(mesh);
 
-      addSolarArray(-12, -8, 6, 6, 2.2, 1.5, 14.2);
+        if (b.hasGlassCurtain) {
+          const g = new THREE.Mesh(
+            new THREE.BoxGeometry(b.dimensions.width + 0.2, b.glassHeight || b.dimensions.height - 4, b.dimensions.depth + 0.2),
+            glassMat
+          );
+          g.position.set(b.position.x, b.position.y, b.position.z);
+          group.add(g);
+        }
 
-      const b2 = new THREE.Mesh(new THREE.BoxGeometry(14, 7, 12), getBuildingMat(0x334155));
-      b2.position.set(13, 3.5, -4);
-      b2.castShadow = true;
-      b2.receiveShadow = true;
-      group.add(b2);
+        if (b.roofFacets) {
+          b.roofFacets.forEach((rf) => {
+            if (rf.solarArray) {
+              const sa = rf.solarArray;
+              addSolarArray(sa.startX, sa.startZ, sa.rows, sa.cols, sa.panelW, sa.panelD, sa.baseY);
+            }
+          });
+        }
 
-      const glass2 = new THREE.Mesh(new THREE.BoxGeometry(14.2, 4, 12.2), glassMat);
-      glass2.position.set(13, 4, -4);
-      group.add(glass2);
+        if (b.hvacUnits) {
+          b.hvacUnits.forEach((hvac) => {
+            const hMesh = new THREE.Mesh(new THREE.BoxGeometry(hvac.w, hvac.h, hvac.d), getBuildingMat(0x64748b));
+            hMesh.position.set(hvac.x, b.dimensions.height + hvac.h / 2, hvac.z);
+            hMesh.castShadow = true;
+            group.add(hMesh);
+          });
+        }
+      });
+    }
 
-      addSolarArray(8, -8, 4, 4, 2.0, 1.5, 7.2);
-
-      const bridge = new THREE.Mesh(new THREE.BoxGeometry(7, 2, 2.5), glassMat);
-      bridge.position.set(3.5, 5.5, -3);
-      group.add(bridge);
-
-      for (let cp = -12; cp <= 12; cp += 8) {
+    if (topo.carports) {
+      topo.carports.forEach((cp) => {
         const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.2, 3, 8), getBuildingMat(0x94a3b8));
-        pole.position.set(cp, 1.5, 16);
+        pole.position.set(cp.x, 1.5, cp.z);
         pole.castShadow = true;
         group.add(pole);
 
-        const canopy = new THREE.Mesh(new THREE.BoxGeometry(6.5, 0.15, 5), getSolarPanelMat());
-        canopy.position.set(cp, 3.1, 16);
-        canopy.rotation.x = -0.25;
+        const canopy = new THREE.Mesh(new THREE.BoxGeometry(cp.width, 0.15, cp.depth), getSolarPanelMat());
+        canopy.position.set(cp.x, 3.1, cp.z);
+        canopy.rotation.x = cp.tilt;
         canopy.castShadow = true;
         canopy.receiveShadow = true;
         group.add(canopy);
-        panelsCount += 12;
-      }
-
-      addCar(-8, 16, Math.PI / 2, 0xef4444);
-      addCar(0, 16, Math.PI / 2, 0x3b82f6);
-      addCar(8, 16, Math.PI / 2, 0xffffff);
-
-      addTree(-18, 8);
-      addTree(-18, -10);
-      addTree(22, 6);
-      addTree(22, -10);
-      addTree(3, 12);
-
-      totalRooftopArea = 210.0;
-    } else if (scenePreset === "highrise") {
-      const towers = [
-        { x: 0, z: 0, w: 12, d: 12, h: 32, color: 0x0f172a },
-        { x: -16, z: -10, w: 10, d: 10, h: 22, color: 0x1e293b },
-        { x: 16, z: -8, w: 10, d: 10, h: 26, color: 0x334155 },
-        { x: -14, z: 12, w: 9, d: 9, h: 16, color: 0x1e293b },
-        { x: 14, z: 14, w: 9, d: 9, h: 18, color: 0x334155 }
-      ];
-
-      towers.forEach((t) => {
-        const b = new THREE.Mesh(new THREE.BoxGeometry(t.w, t.h, t.d), getBuildingMat(t.color));
-        b.position.set(t.x, t.h / 2, t.z);
-        b.castShadow = true;
-        b.receiveShadow = true;
-        group.add(b);
-
-        const g = new THREE.Mesh(new THREE.BoxGeometry(t.w + 0.2, t.h - 4, t.d + 0.2), glassMat);
-        g.position.set(t.x, t.h / 2, t.z);
-        group.add(g);
-
-        addSolarArray(t.x - t.w / 2 + 1.5, t.z - t.d / 2 + 1.5, 3, 3, 1.8, 1.4, t.h + 0.2);
       });
+    }
 
-      addTree(-7, 7);
-      addTree(7, 7);
-      addTree(-7, -7);
-      addTree(7, -7);
-
-      totalRooftopArea = 145.0;
-    } else if (scenePreset === "residential") {
-      const houses = [
-        { x: -14, z: -10 },
-        { x: 0, z: -10 },
-        { x: 14, z: -10 },
-        { x: -14, z: 10 },
-        { x: 0, z: 10 },
-        { x: 14, z: 10 }
-      ];
-
-      houses.forEach((h) => {
+    if (topo.houses) {
+      topo.houses.forEach((h) => {
         const base = new THREE.Mesh(new THREE.BoxGeometry(9, 4.5, 9), getBuildingMat(0x334155));
         base.position.set(h.x, 2.25, h.z);
         base.castShadow = true;
@@ -407,11 +380,20 @@ const SolarCanvas3D = ({
         group.add(roof);
 
         addSolarArray(h.x - 2.8, h.z, 2, 3, 1.6, 1.2, 5.4, -0.45);
-        addTree(h.x + 6, h.z + 5, 0.9);
       });
+    }
 
-      totalRooftopArea = 128.0;
-    } else {
+    if (topo.substation) {
+      const sub = new THREE.Mesh(
+        new THREE.BoxGeometry(topo.substation.w, topo.substation.h, topo.substation.d),
+        getBuildingMat(0x475569)
+      );
+      sub.position.set(topo.substation.x, topo.substation.y, topo.substation.z);
+      sub.castShadow = true;
+      group.add(sub);
+    }
+
+    if (topo.arrayGrid) {
       for (let x = -24; x <= 24; x += 8) {
         for (let z = -20; z <= 20; z += 8) {
           const leg = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.15, 1.6, 8), getBuildingMat(0x94a3b8));
@@ -426,20 +408,31 @@ const SolarCanvas3D = ({
           panel.receiveShadow = true;
           group.add(panel);
           solarPanelsRef.current.push(panel);
-          panelsCount += 8;
         }
       }
+    }
 
-      const sub = new THREE.Mesh(new THREE.BoxGeometry(6, 3.5, 8), getBuildingMat(0x475569));
-      sub.position.set(0, 1.75, 28);
-      sub.castShadow = true;
-      group.add(sub);
+    if (topo.vehicles) {
+      topo.vehicles.forEach((v) => addCar(v.x, v.z, v.rotY, v.color));
+    }
 
-      totalRooftopArea = 320.0;
+    if (topo.vegetation) {
+      topo.vegetation.forEach((veg) => addTree(veg.x, veg.z, veg.scale));
     }
 
     if (onMeshStatsUpdate) {
-      onMeshStatsUpdate({ totalRooftopArea, panelsCount });
+      onMeshStatsUpdate({
+        totalRooftopArea: topo.totalRoofArea,
+        panelsCount: topo.pvPanelCount,
+        systemCapacityKwp: topo.systemCapacityKwp,
+        annualGenerationKwh: topo.annualGenerationKwh,
+        annualSavingsUsd: topo.annualSavingsUsd,
+        co2OffsetTons: topo.co2OffsetTons,
+        location: topo.location,
+        climateZone: topo.climateZone,
+        annualGhi: topo.annualGhi,
+        name: topo.name
+      });
     }
   }, [scenePreset, shadingMode, panelTilt]);
 
@@ -455,6 +448,7 @@ const SolarCanvas3D = ({
     <div style={{ position: "relative", width: "100%", height: "100%" }}>
       <div ref={mountRef} style={{ width: "100%", height: "100%", cursor: "grab" }} />
 
+      {/* Top Camera Controls */}
       <div style={{
         position: "absolute",
         top: "20px",
@@ -490,6 +484,36 @@ const SolarCanvas3D = ({
         ))}
       </div>
 
+      {/* Dataset Telemetry Banner Overlay */}
+      <div style={{
+        position: "absolute",
+        top: "20px",
+        left: "20px",
+        zIndex: 10,
+        background: "rgba(15, 23, 42, 0.8)",
+        backdropFilter: "blur(16px)",
+        border: "1px solid rgba(255, 255, 255, 0.1)",
+        padding: "10px 16px",
+        borderRadius: "14px",
+        color: "#ffffff",
+        maxWidth: "340px",
+        boxShadow: "0 10px 30px rgba(0,0,0,0.5)",
+        fontFamily: "monospace"
+      }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "6px", color: "#f59e0b", fontSize: "0.72rem", fontWeight: 700, marginBottom: "4px" }}>
+          <Globe size={13} />
+          <span>CITYGML LOD2 DATASET ACTIVE</span>
+        </div>
+        <div style={{ fontSize: "0.85rem", fontWeight: 800, color: "#f8fafc", marginBottom: "2px" }}>
+          {currentTopology.name}
+        </div>
+        <div style={{ fontSize: "0.72rem", color: "#94a3b8", display: "flex", alignItems: "center", gap: "4px" }}>
+          <MapPin size={11} color="#38bdf8" />
+          <span>{currentTopology.location}</span>
+        </div>
+      </div>
+
+      {/* Viewport Instructions */}
       <div style={{
         position: "absolute",
         bottom: "16px",

@@ -84,8 +84,7 @@ const StudioPage = ({
         <div style={{ position: "absolute", top: "70px", right: "16px", zIndex: 20, width: "360px", maxWidth: "calc(100vw - 32px)" }}>
           <AnalyticsPanel
             irradiance={baseIrradiance}
-            rooftopArea={meshStats.totalRooftopArea}
-            panelsCount={meshStats.panelsCount}
+            stats={meshStats}
             elevation={elevation}
           />
         </div>

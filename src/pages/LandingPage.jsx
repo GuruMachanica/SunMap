@@ -4,6 +4,10 @@ import BackgroundParticles from "../components/BackgroundParticles";
 import EconomicsModeler from "../components/EconomicsModeler";
 import ClimateSelector from "../components/ClimateSelector";
 import PhysicsBreakdown from "../components/PhysicsBreakdown";
+import HourlyIrradianceChart from "../components/HourlyIrradianceChart";
+import DataFileInspector from "../components/DataFileInspector";
+import TechStackMatrix from "../components/TechStackMatrix";
+import ProjectGenesis from "../components/ProjectGenesis";
 import FaqSection from "../components/FaqSection";
 
 const TOPOLOGIES = [
@@ -11,38 +15,38 @@ const TOPOLOGIES = [
     id: "commercial",
     title: "Commercial Campus",
     desc: "Multi-wing commercial office layout with flat rooftops, HVAC obstructions, and high-density solar canopies.",
-    area: "142.5 m²",
-    capacity: "33.6 kWp",
-    yield: "36,224 kWh/yr"
+    area: "210.0 m²",
+    capacity: "49.6 kWp",
+    yield: "53,420 kWh/yr"
   },
   {
     id: "highrise",
     title: "Urban High-Rise",
     desc: "Dense metropolitan tower core featuring perimeter railings and vertical building shadow occlusion modeling.",
-    area: "57.7 m²",
-    capacity: "14.4 kWp",
-    yield: "14,670 kWh/yr"
+    area: "145.0 m²",
+    capacity: "36.0 kWp",
+    yield: "36,890 kWh/yr"
   },
   {
     id: "residential",
     title: "Residential Sloped Array",
     desc: "Dual-pitch residential roof analyzing south-facing solar tilt optimization and seasonal shading angles.",
-    area: "48.0 m²",
-    capacity: "11.2 kWp",
-    yield: "12,205 kWh/yr"
+    area: "128.0 m²",
+    capacity: "28.8 kWp",
+    yield: "31,240 kWh/yr"
   },
   {
     id: "farm",
     title: "Utility Solar Matrix",
     desc: "Ground-mounted photovoltaic tracker grid with 20° south orientation for utility-scale energy forecasting.",
-    area: "187.5 m²",
-    capacity: "50.0 kWp",
-    yield: "47,680 kWh/yr"
+    area: "320.0 m²",
+    capacity: "80.0 kWp",
+    yield: "81,600 kWh/yr"
   }
 ];
 
 const LandingPage = ({ onLaunchStudio, onOpenReport }) => {
-  const [quickArea, setQuickArea] = useState(120);
+  const [quickArea, setQuickArea] = useState(140);
   const [activeCity, setActiveCity] = useState({
     id: "phoenix",
     name: "Phoenix, USA",
@@ -53,23 +57,22 @@ const LandingPage = ({ onLaunchStudio, onOpenReport }) => {
   });
 
   // Quick estimator calculations scaled by selected city insolation
-  const ghiFactor = activeCity.ghi / 1850;
   const estYield = Math.round(quickArea * activeCity.ghi * 0.20 * 0.82);
   const estSavings = Math.round(estYield * 0.16);
   const estCo2 = ((estYield * 0.85) / 2204.62).toFixed(1);
 
   return (
-    <div className="relative min-h-screen bg-[#080808] text-white pt-24 pb-20 px-4 sm:px-8 overflow-y-auto">
-      {/* Floating Solar Particles */}
+    <div className="relative min-h-screen bg-[#080808] text-white pt-24 pb-24 px-4 sm:px-8 overflow-y-auto">
+      {/* Floating Ambient Solar Particles */}
       <BackgroundParticles />
 
-      {/* Decorative Glow */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] bg-gradient-to-b from-amber-500/15 via-amber-600/5 to-transparent blur-3xl pointer-events-none -z-10" />
+      {/* Hero Ambient Glow */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1100px] h-[550px] bg-gradient-to-b from-amber-500/15 via-amber-600/5 to-transparent blur-3xl pointer-events-none -z-10" />
 
       {/* 1. Hero Section */}
       <section className="max-w-5xl mx-auto text-center space-y-6 pt-8 pb-16 relative z-10">
-        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/[0.04] border border-white/10 font-mono text-[11px] text-zinc-300">
-          <FaAward className="w-3.5 h-3.5 text-amber-400" />
+        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/[0.04] border border-white/10 font-mono text-[11.5px] text-zinc-300">
+          <FaAward className="w-4 h-4 text-amber-400" />
           <span>CodeStorm’25 Winner • 3D Spatial Solar Intelligence</span>
         </div>
 
@@ -88,7 +91,7 @@ const LandingPage = ({ onLaunchStudio, onOpenReport }) => {
         <div className="flex flex-wrap items-center justify-center gap-3.5 pt-2">
           <button
             onClick={() => onLaunchStudio("commercial")}
-            className="flex items-center gap-2.5 px-6 py-3.5 rounded-2xl bg-amber-400 hover:bg-amber-300 text-black font-mono font-extrabold text-[13px] tracking-wide transition-all shadow-[0_0_30px_rgba(245,158,11,0.3)] hover:scale-105">
+            className="flex items-center gap-2.5 px-6 py-3.5 rounded-2xl bg-amber-400 hover:bg-amber-300 text-black font-mono font-extrabold text-[13px] tracking-wide transition-all shadow-[0_0_30px_rgba(245,158,11,0.35)] hover:scale-105">
             <FaCube className="w-4 h-4" /> LAUNCH 3D STUDIO
             <FaArrowRight className="w-3 h-3 ml-1" />
           </button>
@@ -128,12 +131,17 @@ const LandingPage = ({ onLaunchStudio, onOpenReport }) => {
         </div>
       </section>
 
-      {/* 2. Global Climate Selector */}
+      {/* 2. Global Climate Insolation Profiles */}
       <section className="max-w-5xl mx-auto my-12 relative z-10">
         <ClimateSelector activeCity={activeCity} setActiveCity={setActiveCity} />
       </section>
 
-      {/* 3. Interactive Solar Quick Estimator Widget */}
+      {/* 3. 24-Hour Diurnal Solar Flux Chart */}
+      <section className="max-w-5xl mx-auto my-12 relative z-10">
+        <HourlyIrradianceChart />
+      </section>
+
+      {/* 4. Interactive Quick Estimator Widget */}
       <section className="max-w-5xl mx-auto my-12 glass-panel p-6 sm:p-8 rounded-3xl border border-amber-500/20 relative overflow-hidden z-10">
         <div className="absolute -right-16 -top-16 w-48 h-48 bg-amber-500/10 rounded-full blur-2xl pointer-events-none" />
 
@@ -161,7 +169,7 @@ const LandingPage = ({ onLaunchStudio, onOpenReport }) => {
           <input
             type="range"
             min="30"
-            max="500"
+            max="600"
             step="10"
             value={quickArea}
             onChange={(e) => setQuickArea(parseInt(e.target.value))}
@@ -197,12 +205,17 @@ const LandingPage = ({ onLaunchStudio, onOpenReport }) => {
         </div>
       </section>
 
-      {/* 4. Financial Economics Modeler */}
+      {/* 5. Bankable Economics & Tariff Modeler */}
       <section className="max-w-5xl mx-auto my-12 relative z-10">
         <EconomicsModeler baseAnnualKwh={estYield} />
       </section>
 
-      {/* 5. Architectural Topologies */}
+      {/* 6. Preloaded CityGML Data Schemas */}
+      <section className="max-w-5xl mx-auto my-12 relative z-10">
+        <DataFileInspector onLaunchStudio={onLaunchStudio} />
+      </section>
+
+      {/* 7. Architectural Topologies */}
       <section className="max-w-5xl mx-auto my-16 space-y-6 relative z-10">
         <div className="text-center space-y-2">
           <span className="text-[10px] font-mono text-amber-400 uppercase tracking-widest block font-bold">
@@ -245,12 +258,22 @@ const LandingPage = ({ onLaunchStudio, onOpenReport }) => {
         </div>
       </section>
 
-      {/* 6. Physics Breakdown */}
+      {/* 8. Physics Formulations Breakdown */}
       <section className="max-w-5xl mx-auto my-12 relative z-10">
         <PhysicsBreakdown />
       </section>
 
-      {/* 7. FAQ Hub */}
+      {/* 9. Technology Stack Matrix */}
+      <section className="max-w-5xl mx-auto my-12 relative z-10">
+        <TechStackMatrix />
+      </section>
+
+      {/* 10. Project Genesis & Authors */}
+      <section className="max-w-5xl mx-auto my-12 relative z-10">
+        <ProjectGenesis />
+      </section>
+
+      {/* 11. FAQ Knowledge Hub */}
       <section className="max-w-5xl mx-auto my-12 relative z-10">
         <FaqSection />
       </section>

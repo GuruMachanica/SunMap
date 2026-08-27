@@ -19,12 +19,12 @@ export default function HeroSection({ onLaunchStudio, onOpenQuote }) {
       {/* 1. Photorealistic 4-State Architectural Media */}
       <PhotorealisticHeroMedia mode={mode} />
 
-      {/* 2. Soft subtle dark vignette for natural contrast */}
+      {/* 2. Soft ambient vignette overlay */}
       <div
         style={{
           position: 'absolute',
           inset: 0,
-          background: 'linear-gradient(180deg, rgba(9, 13, 22, 0.4) 0%, rgba(9, 13, 22, 0.15) 50%, rgba(9, 13, 22, 0.75) 100%)',
+          background: 'linear-gradient(180deg, rgba(9, 13, 22, 0.35) 0%, rgba(9, 13, 22, 0.1) 40%, rgba(9, 13, 22, 0.65) 100%)',
           zIndex: 5,
           pointerEvents: 'none'
         }}
@@ -47,10 +47,10 @@ export default function HeroSection({ onLaunchStudio, onOpenQuote }) {
           boxSizing: 'border-box'
         }}
       >
-        {/* Top / Center Text */}
+        {/* Center Text Block */}
         <div
           style={{
-            maxWidth: '1000px',
+            maxWidth: '960px',
             margin: '0 auto',
             textAlign: 'center'
           }}
@@ -66,7 +66,7 @@ export default function HeroSection({ onLaunchStudio, onOpenQuote }) {
               background: 'rgba(9, 13, 22, 0.75)',
               border: '1px solid rgba(245, 158, 11, 0.35)',
               backdropFilter: 'blur(16px)',
-              marginBottom: '18px',
+              marginBottom: '16px',
               boxShadow: '0 4px 20px rgba(0, 0, 0, 0.5)'
             }}
           >
@@ -94,7 +94,7 @@ export default function HeroSection({ onLaunchStudio, onOpenQuote }) {
               letterSpacing: '-0.03em',
               color: '#ffffff',
               marginBottom: '16px',
-              textShadow: '0 4px 24px rgba(0, 0, 0, 0.9), 0 1px 3px rgba(0,0,0,0.8)'
+              textShadow: '0 4px 20px rgba(0, 0, 0, 0.9)'
             }}
           >
             Precision 3D Solar Potential &amp; <br />
@@ -110,29 +110,20 @@ export default function HeroSection({ onLaunchStudio, onOpenQuote }) {
             </span>
           </h1>
 
-          {/* Readability-enhanced line: crisp white with strong text shadow and semi-opaque inline glass capsule */}
-          <div style={{ marginTop: '12px', marginBottom: '28px' }}>
-            <p
-              style={{
-                display: 'inline-block',
-                fontSize: 'clamp(0.95rem, 1.25vw, 1.12rem)',
-                color: '#ffffff',
-                lineHeight: 1.6,
-                maxWidth: '820px',
-                margin: '0 auto',
-                fontWeight: 600,
-                padding: '8px 22px',
-                borderRadius: '9999px',
-                background: 'rgba(9, 13, 22, 0.65)',
-                backdropFilter: 'blur(12px)',
-                border: '1px solid rgba(255, 255, 255, 0.12)',
-                boxShadow: '0 4px 20px rgba(0,0,0,0.6)',
-                textShadow: '0 1px 4px rgba(0, 0, 0, 0.9)'
-              }}
-            >
-              Eliminate 25–40% shading errors with sub-degree LOD2 CityGML facet extraction, real-time WebGL shadow occlusion, and bankable PVLib solar yield forecasting.
-            </p>
-          </div>
+          {/* Pure clean text line with ONLY subtle text shadow (NO box/capsule) */}
+          <p
+            style={{
+              fontSize: 'clamp(0.95rem, 1.25vw, 1.15rem)',
+              color: '#f8fafc',
+              lineHeight: 1.65,
+              maxWidth: '780px',
+              margin: '0 auto 28px',
+              fontWeight: 500,
+              textShadow: '0 2px 10px rgba(0, 0, 0, 0.85), 0 1px 3px rgba(0, 0, 0, 0.9)'
+            }}
+          >
+            Eliminate 25–40% shading errors with sub-degree LOD2 CityGML facet extraction, real-time WebGL shadow occlusion, and bankable PVLib solar yield forecasting.
+          </p>
 
           {/* Primary Action Buttons */}
           <div

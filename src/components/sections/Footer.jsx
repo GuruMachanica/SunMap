@@ -19,13 +19,13 @@ export default function Footer() {
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#10b981', fontSize: '0.85rem', fontWeight: 600 }}>
-            <ShieldCheck size={18} /> Clean Energy Council Approved Retailer
+            <ShieldCheck size={18} /> Clean Energy Council Approved Architecture
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#38bdf8', fontSize: '0.85rem', fontWeight: 600 }}>
-            <Award size={18} /> ISO 9001 Quality Certified Hardware
+            <Award size={18} /> CodeStorm’25 Winner Hardware Platform
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#f59e0b', fontSize: '0.85rem', fontWeight: 600 }}>
-            <CheckCircle size={18} /> 25-Year Manufacturer Warranty Protection
+            <CheckCircle size={18} /> 25-Year Manufacturer Warranty Simulation
           </div>
         </div>
 
@@ -49,17 +49,15 @@ export default function Footer() {
                 <Sun size={20} />
               </div>
               <span style={{ fontSize: '1.25rem', fontWeight: 800, color: '#fff' }}>
-                reposit<span style={{ color: '#f59e0b' }}>.</span>
+                sunmap<span style={{ color: '#f59e0b' }}>.</span>
               </span>
             </div>
             <p style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)', lineHeight: 1.6, marginBottom: '20px' }}>
-              Pioneering 7-year guaranteed $0 electricity bills through intelligent 3D solar modeling, smart battery arbitrage, and autonomous energy trading.
+              Pioneering 7-year guaranteed $0 electricity bills through intelligent 3D solar modeling, smart battery arbitrage, and autonomous spatial energy optimization.
             </p>
             <div style={{ display: 'flex', gap: '12px', color: 'var(--color-text-muted)' }}>
-              <a href="#" style={socialIconStyle}><Twitter size={18} /></a>
-              <a href="#" style={socialIconStyle}><Github size={18} /></a>
-              <a href="#" style={socialIconStyle}><Linkedin size={18} /></a>
-              <a href="#" style={socialIconStyle}><Mail size={18} /></a>
+              <a href="https://github.com/GuruMachanica/SunMap" target="_blank" rel="noreferrer" style={socialIconStyle}><Github size={18} /></a>
+              <a href="https://github.com/GuruMachanica" target="_blank" rel="noreferrer" style={socialIconStyle}><Linkedin size={18} /></a>
             </div>
           </div>
 
@@ -77,19 +75,19 @@ export default function Footer() {
 
           {/* Col 3: Legal & Policies */}
           <div>
-            <h4 style={{ color: '#fff', fontSize: '0.95rem', marginBottom: '16px' }}>Legal & Policies</h4>
+            <h4 style={{ color: '#fff', fontSize: '0.95rem', marginBottom: '16px' }}>Engineering Standards</h4>
             <ul style={listStyle}>
-              <li><a href="#" style={linkStyle}>7-Year No-Bill Guarantee Terms</a></li>
-              <li><a href="#" style={linkStyle}>25-Year Hardware Warranty</a></li>
-              <li><a href="#" style={linkStyle}>Grid Connection Compliance</a></li>
-              <li><a href="#" style={linkStyle}>Privacy & Data Policy</a></li>
-              <li><a href="#" style={linkStyle}>Terms of Service</a></li>
+              <li><a href="#" style={linkStyle}>NREL PVLib Benchmarked</a></li>
+              <li><a href="#" style={linkStyle}>25-Year Hardware Forecasting</a></li>
+              <li><a href="#" style={linkStyle}>CityGML LOD2 Geometry Engine</a></li>
+              <li><a href="#" style={linkStyle}>Three.js WebGL Acceleration</a></li>
+              <li><a href="#" style={linkStyle}>Privacy &amp; Data Security</a></li>
             </ul>
           </div>
 
-          {/* Col 4: Customer Support & Hours */}
+          {/* Col 4: Platform Engine & Status */}
           <div>
-            <h4 style={{ color: '#fff', fontSize: '0.95rem', marginBottom: '16px' }}>Customer Support</h4>
+            <h4 style={{ color: '#fff', fontSize: '0.95rem', marginBottom: '16px' }}>System Status</h4>
             <div
               style={{
                 background: 'rgba(255, 255, 255, 0.03)',
@@ -99,11 +97,11 @@ export default function Footer() {
               }}
             >
               <div style={{ fontWeight: 700, color: '#10b981', fontSize: '0.9rem', marginBottom: '4px' }}>
-                24/7 Grid Support & Monitoring
+                Autonomous 3D Spatial Engine
               </div>
               <p style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)', lineHeight: 1.5 }}>
-                Toll Free: 1800 000 SOLAR<br />
-                support@repositpower.com
+                Ray-Traced Shadow Occlusion Active<br />
+                CodeStorm’25 Winner Project
               </p>
             </div>
           </div>
@@ -112,11 +110,11 @@ export default function Footer() {
         {/* Bottom Legal Disclaimer */}
         <div style={{ borderTop: '1px solid rgba(255, 255, 255, 0.06)', paddingTop: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
           <div style={{ fontSize: '0.78rem', color: 'var(--color-text-muted)' }}>
-            © {new Date().getFullYear()} Reposit Solar Technologies Inc. All rights reserved. Zero-bill guarantee subject to site eligibility assessment.
+            © {new Date().getFullYear()} SunMap • Mohammad Huzaifa &amp; Mohnish Gupta. All rights reserved. Proprietary - Strict Private Use &amp; Inspection License.
           </div>
           <div style={{ display: 'flex', gap: '20px', fontSize: '0.78rem' }}>
             <a href="#" style={linkStyle}>Privacy Policy</a>
-            <a href="#" style={linkStyle}>Terms & Conditions</a>
+            <a href="#" style={linkStyle}>Terms &amp; Conditions</a>
             <a href="#" style={linkStyle}>Security</a>
           </div>
         </div>

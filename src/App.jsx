@@ -3,20 +3,22 @@ import Navbar from "./components/Navbar";
 import LandingPage from "./pages/LandingPage";
 import StudioPage from "./pages/StudioPage";
 import ReportModal from "./components/ReportModal";
+import QuoteModal from "./components/QuoteModal";
 
 const App = () => {
   const [activeTab, setActiveTab] = useState("home");
-  const [timeOfDay, setTimeOfDay] = useState(12.0); // 12:00 PM
+  const [timeOfDay, setTimeOfDay] = useState(12.0);
   const [season, setSeason] = useState("summer");
   const [scenePreset, setScenePreset] = useState("commercial");
   const [shadingMode, setShadingMode] = useState("realistic");
   const [reportModalOpen, setReportModalOpen] = useState(false);
+  const [quoteModalOpen, setQuoteModalOpen] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [panelTilt, setPanelTilt] = useState(25); // 25 degrees standard
+  const [panelTilt, setPanelTilt] = useState(25);
 
   const [meshStats, setMeshStats] = useState({
-    totalRooftopArea: 142.5,
-    panelsCount: 84
+    totalRooftopArea: 210.0,
+    panelsCount: 120
   });
 
   const { elevation, azimuth, baseIrradiance } = useMemo(() => {
@@ -52,6 +54,8 @@ const App = () => {
           <LandingPage
             onLaunchStudio={handleLaunchStudio}
             onOpenReport={() => setReportModalOpen(true)}
+            onOpenQuote={() => setQuoteModalOpen(true)}
+            setActiveTab={setActiveTab}
           />
         ) : (
           <StudioPage
@@ -84,6 +88,11 @@ const App = () => {
         elevation={elevation}
         azimuth={azimuth}
         scenePreset={scenePreset}
+      />
+
+      <QuoteModal
+        isOpen={quoteModalOpen}
+        onClose={() => setQuoteModalOpen(false)}
       />
     </div>
   );

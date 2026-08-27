@@ -1,7 +1,6 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useImperativeHandle, forwardRef } from "react";
 import * as THREE from "three";
 import topologiesData from "../../datasets/topologies_dataset.json";
-import { MapPin, Globe, Sun, Layers } from "lucide-react";
 
 const CAMERA_PRESETS = [
   { id: "orbit", label: "Neighborhood 3D", pos: [38, 28, 44], target: [0, 4, 0] },
@@ -10,14 +9,16 @@ const CAMERA_PRESETS = [
   { id: "street", label: "Street Level", pos: [32, 3.5, 32], target: [0, 6, 0] }
 ];
 
-const SolarCanvas3D = ({
+const SolarCanvas3D = forwardRef(({
   elevation = 55,
   azimuth = 180,
   shadingMode = "realistic",
   scenePreset = "commercial",
   onMeshStatsUpdate,
-  panelTilt = 25
-}) => {
+  panelTilt = 25,
+  activeCamPreset = "orbit",
+  onCamPresetChange
+}, ref) => {
   const mountRef = useRef(null);
   const sceneRef = useRef(null);
   const cameraRef = useRef(null);
@@ -25,9 +26,16 @@ const SolarCanvas3D = ({
   const sunSphereRef = useRef(null);
   const modelsGroupRef = useRef(null);
   const solarPanelsRef = useRef([]);
-  const [activeCamPreset, setActiveCamPreset] = useState("orbit");
 
-  const currentTopology = topologiesData.topologies[scenePreset] || topologiesData.topologies.commercial;
+  useImperativeHandle(ref, () => ({
+    setCameraPreset: (presetId) => {
+      const preset = CAMERA_PRESETS.find(p => p.id === presetId);
+      if (preset && cameraRef.current) {
+        cameraRef.current.position.set(...preset.pos);
+        cameraRef.current.lookAt(new THREE.Vector3(...preset.target));
+      }
+    }
+  }));
 
   useEffect(() => {
     const currentMount = mountRef.current;
@@ -436,53 +444,9 @@ const SolarCanvas3D = ({
     }
   }, [scenePreset, shadingMode, panelTilt]);
 
-  const handleSetPreset = (preset) => {
-    setActiveCamPreset(preset.id);
-    if (!cameraRef.current) return;
-    const cam = cameraRef.current;
-    cam.position.set(...preset.pos);
-    cam.lookAt(new THREE.Vector3(...preset.target));
-  };
-
   return (
     <div style={{ position: "relative", width: "100%", height: "100%" }}>
       <div ref={mountRef} style={{ width: "100%", height: "100%", cursor: "grab" }} />
-
-      {/* Top Camera Controls */}
-      <div style={{
-        position: "absolute",
-        top: "20px",
-        left: "50%",
-        transform: "translateX(-50%)",
-        zIndex: 20,
-        display: "flex",
-        alignItems: "center",
-        gap: "6px",
-        background: "rgba(9, 13, 22, 0.75)",
-        backdropFilter: "blur(16px)",
-        border: "1px solid rgba(255, 255, 255, 0.12)",
-        padding: "4px",
-        borderRadius: "9999px"
-      }}>
-        {CAMERA_PRESETS.map((p) => (
-          <button
-            key={p.id}
-            onClick={() => handleSetPreset(p)}
-            style={{
-              padding: "6px 14px",
-              borderRadius: "9999px",
-              border: "none",
-              background: activeCamPreset === p.id ? "#f59e0b" : "transparent",
-              color: activeCamPreset === p.id ? "#000000" : "#94a3b8",
-              fontWeight: 700,
-              fontSize: "0.78rem",
-              cursor: "pointer",
-              transition: "all 0.2s"
-            }}>
-            {p.label}
-          </button>
-        ))}
-      </div>
 
       {/* Viewport Instructions */}
       <div style={{
@@ -504,6 +468,6 @@ const SolarCanvas3D = ({
       </div>
     </div>
   );
-};
+});
 
 export default SolarCanvas3D;

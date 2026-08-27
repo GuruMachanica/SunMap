@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: sunmap-frontend
+    env: static
+    buildCommand: npm --prefix Frontend install && npm --prefix Frontend run build
+    staticPublishPath: ./Frontend/dist
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    autoDeploy: true
+
+  - type: web
+    name: sunmap-backend
+    env: python
+    buildCommand: pip install -r Backend/requirements.txt
+    startCommand: python Backend/server.py 8000 --no-browser
+    plan: free
+    autoDeploy: true

@@ -1,12 +1,14 @@
 import React, { useState, useMemo } from "react";
-import Header from "./components/Header";
-import SolarCanvas3D from "./components/SolarCanvas3D";
-import SolarControls from "./components/SolarControls";
-import AnalyticsPanel from "./components/AnalyticsPanel";
+import Navbar from "./components/Navbar";
+import LandingPage from "./pages/LandingPage";
+import StudioPage from "./pages/StudioPage";
 import ReportModal from "./components/ReportModal";
 
 const App = () => {
-  // State for Solar Trajectory Engine
+  // Navigation: "home" | "studio"
+  const [activeTab, setActiveTab] = useState("home");
+
+  // Solar Trajectory State
   const [timeOfDay, setTimeOfDay] = useState(12.0); // 12:00 PM
   const [season, setSeason] = useState("summer"); // "summer", "equinox", "winter"
   const [scenePreset, setScenePreset] = useState("commercial");
@@ -21,19 +23,10 @@ const App = () => {
 
   // Calculate Elevation & Azimuth from Time of Day and Season
   const { elevation, azimuth, baseIrradiance } = useMemo(() => {
-    // Peak elevation based on season
     const maxElev = season === "summer" ? 72 : season === "equinox" ? 50 : 28;
-
-    // Normalize time (6 AM = -6 hrs from solar noon, 12 PM = 0, 6 PM = +6)
     const hourDelta = timeOfDay - 12.0;
-
-    // Solar Elevation: Sine curve peaking at solar noon
     const rawElev = Math.max(0, maxElev * Math.cos((hourDelta / 6.5) * (Math.PI / 2)));
-
-    // Solar Azimuth: Sweeps from East (90 deg) at sunrise to South (180 deg) at noon to West (270 deg) at sunset
     const rawAzim = 180 + (hourDelta / 6.5) * 85;
-
-    // Direct Normal Irradiance (Clear sky formula approx)
     const rad = (rawElev * Math.PI) / 180;
     const baseIrr = Math.round(1000 * Math.sin(rad));
 
@@ -44,25 +37,29 @@ const App = () => {
     };
   }, [timeOfDay, season]);
 
+  const handleLaunchStudio = (preset = "commercial") => {
+    setScenePreset(preset);
+    setActiveTab("studio");
+  };
+
   return (
-    <div className="relative w-screen h-screen bg-[#080808] text-white overflow-hidden flex flex-col font-sans select-none">
-      {/* Top Header */}
-      <Header onOpenReport={() => setReportModalOpen(true)} />
+    <div className="relative w-screen h-screen bg-[#080808] text-white overflow-hidden flex flex-col font-sans">
+      {/* Top Universal Navbar */}
+      <Navbar
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        onOpenReport={() => setReportModalOpen(true)}
+      />
 
-      {/* Main Interactive Studio Viewport */}
-      <main className="relative flex-1 w-full h-full">
-        {/* Fullscreen 3D WebGL Solar Simulation Canvas */}
-        <SolarCanvas3D
-          elevation={elevation}
-          azimuth={azimuth}
-          shadingMode={shadingMode}
-          scenePreset={scenePreset}
-          onMeshStatsUpdate={setMeshStats}
-        />
-
-        {/* Floating Left Control Panel */}
-        <div className="absolute top-20 left-4 z-20 w-80 sm:w-96 max-w-[calc(100vw-32px)] pointer-events-auto">
-          <SolarControls
+      {/* Main Content Area */}
+      <main className="relative flex-1 w-full h-full overflow-hidden">
+        {activeTab === "home" ? (
+          <LandingPage
+            onLaunchStudio={handleLaunchStudio}
+            onOpenReport={() => setReportModalOpen(true)}
+          />
+        ) : (
+          <StudioPage
             timeOfDay={timeOfDay}
             setTimeOfDay={setTimeOfDay}
             season={season}
@@ -73,18 +70,12 @@ const App = () => {
             setShadingMode={setShadingMode}
             elevation={elevation}
             azimuth={azimuth}
+            baseIrradiance={baseIrradiance}
+            meshStats={meshStats}
+            setMeshStats={setMeshStats}
+            onBackToHome={() => setActiveTab("home")}
           />
-        </div>
-
-        {/* Floating Right Analytics Panel */}
-        <div className="absolute top-20 right-4 z-20 w-80 sm:w-96 max-w-[calc(100vw-32px)] pointer-events-auto hidden md:block">
-          <AnalyticsPanel
-            irradiance={baseIrradiance}
-            rooftopArea={meshStats.totalRooftopArea}
-            panelsCount={meshStats.panelsCount}
-            elevation={elevation}
-          />
-        </div>
+        )}
       </main>
 
       {/* Official Audit Summary Modal */}

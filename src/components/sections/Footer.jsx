@@ -1,39 +1,39 @@
 import React from 'react';
-import { Sun, ShieldCheck, Twitter, Github, Linkedin, Mail, Award, CheckCircle } from 'lucide-react';
+import { Sun, ShieldCheck, Github, Award, CheckCircle } from 'lucide-react';
 
 export default function Footer() {
   return (
-    <footer style={{ borderTop: '1px solid rgba(255, 255, 255, 0.08)', padding: '70px 0 35px', background: '#060911' }}>
-      <div className="container">
-        {/* Compliance Badges Strip */}
+    <footer style={{ borderTop: '1px solid rgba(255, 255, 255, 0.08)', padding: '60px 0 30px', background: '#060911' }}>
+      <div className="container" style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 24px' }}>
+        {/* Accolades Strip */}
         <div
           style={{
             display: 'flex',
             flexWrap: 'wrap',
             justifyContent: 'space-between',
             alignItems: 'center',
-            gap: '20px',
-            paddingBottom: '40px',
-            marginBottom: '40px',
+            gap: '16px',
+            paddingBottom: '32px',
+            marginBottom: '36px',
             borderBottom: '1px solid rgba(255, 255, 255, 0.06)'
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#10b981', fontSize: '0.85rem', fontWeight: 600 }}>
-            <ShieldCheck size={18} /> Clean Energy Council Approved Architecture
+            <Award size={18} /> CodeStorm’25 Hackathon Winner Project
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#38bdf8', fontSize: '0.85rem', fontWeight: 600 }}>
-            <Award size={18} /> CodeStorm’25 Winner Hardware Platform
+            <ShieldCheck size={18} /> CityGML LOD2 Geometry Extraction Engine
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#f59e0b', fontSize: '0.85rem', fontWeight: 600 }}>
-            <CheckCircle size={18} /> 25-Year Manufacturer Warranty Simulation
+            <CheckCircle size={18} /> NREL PVLib Irradiance Physics Benchmarked
           </div>
         </div>
 
-        {/* Footer 4-Column Layout */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '40px', marginBottom: '50px' }}>
-          {/* Col 1: Brand & Bio */}
+        {/* 4-Column Structured Layout */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '40px', marginBottom: '40px' }}>
+          {/* Col 1: Brand & Team Info */}
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '14px' }}>
               <div
                 style={{
                   width: '34px',
@@ -52,42 +52,39 @@ export default function Footer() {
                 sunmap<span style={{ color: '#f59e0b' }}>.</span>
               </span>
             </div>
-            <p style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)', lineHeight: 1.6, marginBottom: '20px' }}>
-              Pioneering 7-year guaranteed $0 electricity bills through intelligent 3D solar modeling, smart battery arbitrage, and autonomous spatial energy optimization.
+            <p style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)', lineHeight: 1.6, marginBottom: '18px' }}>
+              Intelligent 3D spatial solar irradiance modeling, LOD2 CityGML rooftop normal extraction, and ray-traced shadow occlusion engine developed for urban photovoltaic assessment.
             </p>
             <div style={{ display: 'flex', gap: '12px', color: 'var(--color-text-muted)' }}>
               <a href="https://github.com/GuruMachanica/SunMap" target="_blank" rel="noreferrer" style={socialIconStyle}><Github size={18} /></a>
-              <a href="https://github.com/GuruMachanica" target="_blank" rel="noreferrer" style={socialIconStyle}><Linkedin size={18} /></a>
             </div>
           </div>
 
-          {/* Col 2: Navigation Links */}
+          {/* Col 2: Engineering Team */}
           <div>
-            <h4 style={{ color: '#fff', fontSize: '0.95rem', marginBottom: '16px' }}>Navigation</h4>
+            <h4 style={{ color: '#fff', fontSize: '0.95rem', marginBottom: '14px' }}>Team Ironlogic</h4>
             <ul style={listStyle}>
-              <li><a href="#how-it-works" style={linkStyle}>How It Works</a></li>
-              <li><a href="#cases" style={linkStyle}>Our Case Studies</a></li>
-              <li><a href="#tech-grid" style={linkStyle}>Smart Controller AI</a></li>
-              <li><a href="#calculator" style={linkStyle}>Savings Calculator</a></li>
-              <li><a href="#final-cta" style={linkStyle}>Check Roof Eligibility</a></li>
+              <li style={{ color: '#94a3b8', fontSize: '0.85rem' }}>Mohammad Huzaifa (Lead Architecture)</li>
+              <li style={{ color: '#94a3b8', fontSize: '0.85rem' }}>Mohnish Narayan Gupta</li>
+              <li style={{ color: '#94a3b8', fontSize: '0.85rem' }}>Isnia Izhar</li>
+              <li style={{ color: '#94a3b8', fontSize: '0.85rem' }}>Ashutosh Mishra</li>
             </ul>
           </div>
 
-          {/* Col 3: Legal & Policies */}
+          {/* Col 3: Technical Specifications */}
           <div>
-            <h4 style={{ color: '#fff', fontSize: '0.95rem', marginBottom: '16px' }}>Engineering Standards</h4>
+            <h4 style={{ color: '#fff', fontSize: '0.95rem', marginBottom: '14px' }}>Architecture</h4>
             <ul style={listStyle}>
-              <li><a href="#" style={linkStyle}>NREL PVLib Benchmarked</a></li>
-              <li><a href="#" style={linkStyle}>25-Year Hardware Forecasting</a></li>
-              <li><a href="#" style={linkStyle}>CityGML LOD2 Geometry Engine</a></li>
-              <li><a href="#" style={linkStyle}>Three.js WebGL Acceleration</a></li>
-              <li><a href="#" style={linkStyle}>Privacy &amp; Data Security</a></li>
+              <li><a href="#how-it-works" style={linkStyle}>3D Facet Raycasting Pipeline</a></li>
+              <li><a href="#tech" style={linkStyle}>Smart Controller Architecture</a></li>
+              <li><a href="#calculator" style={linkStyle}>Diurnal Yield Modeling</a></li>
+              <li><a href="#cases" style={linkStyle}>Validation Case Studies</a></li>
             </ul>
           </div>
 
-          {/* Col 4: Platform Engine & Status */}
+          {/* Col 4: Platform Engine Status */}
           <div>
-            <h4 style={{ color: '#fff', fontSize: '0.95rem', marginBottom: '16px' }}>System Status</h4>
+            <h4 style={{ color: '#fff', fontSize: '0.95rem', marginBottom: '14px' }}>Engine Status</h4>
             <div
               style={{
                 background: 'rgba(255, 255, 255, 0.03)',
@@ -96,26 +93,24 @@ export default function Footer() {
                 border: '1px solid rgba(255, 255, 255, 0.06)'
               }}
             >
-              <div style={{ fontWeight: 700, color: '#10b981', fontSize: '0.9rem', marginBottom: '4px' }}>
-                Autonomous 3D Spatial Engine
+              <div style={{ fontWeight: 700, color: '#10b981', fontSize: '0.88rem', marginBottom: '4px' }}>
+                WebGL 60 FPS Ray-Tracing Active
               </div>
-              <p style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)', lineHeight: 1.5 }}>
-                Ray-Traced Shadow Occlusion Active<br />
-                CodeStorm’25 Winner Project
+              <p style={{ fontSize: '0.78rem', color: 'var(--color-text-muted)', lineHeight: 1.5, margin: 0 }}>
+                Developed for CodeStorm’25<br />
+                Licensed to Team Ironlogic
               </p>
             </div>
           </div>
         </div>
 
         {/* Bottom Legal Disclaimer */}
-        <div style={{ borderTop: '1px solid rgba(255, 255, 255, 0.06)', paddingTop: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
+        <div style={{ borderTop: '1px solid rgba(255, 255, 255, 0.06)', paddingTop: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
           <div style={{ fontSize: '0.78rem', color: 'var(--color-text-muted)' }}>
-            © {new Date().getFullYear()} SunMap • Mohammad Huzaifa &amp; Mohnish Gupta. All rights reserved. Proprietary - Strict Private Use &amp; Inspection License.
+            © {new Date().getFullYear()} SunMap • Team Ironlogic. All rights reserved. Proprietary - Strict Private Use &amp; Inspection License.
           </div>
-          <div style={{ display: 'flex', gap: '20px', fontSize: '0.78rem' }}>
-            <a href="#" style={linkStyle}>Privacy Policy</a>
-            <a href="#" style={linkStyle}>Terms &amp; Conditions</a>
-            <a href="#" style={linkStyle}>Security</a>
+          <div style={{ fontSize: '0.78rem', color: '#64748b' }}>
+            Inquiries: ironlogic@zohomail.in
           </div>
         </div>
       </div>
@@ -129,7 +124,7 @@ const listStyle = {
   margin: 0,
   display: 'flex',
   flexDirection: 'column',
-  gap: '10px'
+  gap: '8px'
 };
 
 const linkStyle = {

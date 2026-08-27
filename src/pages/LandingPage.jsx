@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { FaSun, FaCube, FaBolt, FaDollarSign, FaLeaf, FaArrowRight, FaAward } from "react-icons/fa";
 import BackgroundParticles from "../components/BackgroundParticles";
+import MetricsStrip from "../components/MetricsStrip";
 import EconomicsModeler from "../components/EconomicsModeler";
 import ClimateSelector from "../components/ClimateSelector";
 import PhysicsBreakdown from "../components/PhysicsBreakdown";
@@ -13,6 +14,7 @@ import Testimonials from "../components/Testimonials";
 import SimulationVideoPlayer from "../components/SimulationVideoPlayer";
 import ProjectGenesis from "../components/ProjectGenesis";
 import FaqSection from "../components/FaqSection";
+import FinalCta from "../components/FinalCta";
 import Footer from "../components/Footer";
 
 const TOPOLOGIES = [
@@ -73,7 +75,7 @@ const LandingPage = ({ onLaunchStudio, onOpenReport, onOpenQuote, setActiveTab }
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1100px] h-[550px] bg-gradient-to-b from-amber-500/15 via-amber-600/5 to-transparent blur-3xl pointer-events-none -z-10" />
 
       {/* 1. Hero Section */}
-      <section className="max-w-5xl mx-auto text-center space-y-6 pt-8 pb-16 px-4 sm:px-8 relative z-10">
+      <section className="max-w-5xl mx-auto text-center space-y-6 pt-8 pb-12 px-4 sm:px-8 relative z-10">
         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/[0.04] border border-white/10 font-mono text-[11.5px] text-zinc-300">
           <FaAward className="w-4 h-4 text-amber-400" />
           <span>CodeStorm’25 Winner • 3D Spatial Solar Intelligence</span>
@@ -110,51 +112,29 @@ const LandingPage = ({ onLaunchStudio, onOpenReport, onOpenQuote, setActiveTab }
             VIEW FEASIBILITY REPORT
           </button>
         </div>
-
-        {/* Live Metrics Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-8 max-w-4xl mx-auto text-left font-mono">
-          <div className="p-4 rounded-2xl bg-white/[0.02] border border-white/5">
-            <span className="text-[11px] text-zinc-500 block mb-1">RAY-TRACED SHADOWS</span>
-            <span className="text-[20px] font-bold text-white">60 FPS</span>
-            <span className="text-[11px] text-zinc-500 block mt-0.5">WebGL Acceleration</span>
-          </div>
-
-          <div className="p-4 rounded-2xl bg-white/[0.02] border border-white/5">
-            <span className="text-[11px] text-zinc-500 block mb-1">POA IRRADIANCE</span>
-            <span className="text-[20px] font-bold text-amber-400">96.8%</span>
-            <span className="text-[11px] text-zinc-500 block mt-0.5">PVLib Benchmark</span>
-          </div>
-
-          <div className="p-4 rounded-2xl bg-white/[0.02] border border-white/5">
-            <span className="text-[11px] text-zinc-500 block mb-1">SURFACE RESOLUTION</span>
-            <span className="text-[20px] font-bold text-white">&lt; 0.5°</span>
-            <span className="text-[11px] text-zinc-500 block mt-0.5">Normal Vector Error</span>
-          </div>
-
-          <div className="p-4 rounded-2xl bg-white/[0.02] border border-white/5">
-            <span className="text-[11px] text-zinc-500 block mb-1">SPATIAL DATA</span>
-            <span className="text-[20px] font-bold text-emerald-400">CityGML</span>
-            <span className="text-[11px] text-zinc-500 block mt-0.5">3D Building CAD</span>
-          </div>
-        </div>
       </section>
 
-      {/* 2. Simulation Video Showcase */}
+      {/* 2. Metrics Strip */}
+      <section className="relative z-10 my-4">
+        <MetricsStrip />
+      </section>
+
+      {/* 3. Simulation Video Showcase */}
       <section className="max-w-5xl mx-auto my-12 px-4 sm:px-8 relative z-10">
         <SimulationVideoPlayer />
       </section>
 
-      {/* 3. Global Climate Profiles */}
+      {/* 4. Global Climate Profiles */}
       <section className="max-w-5xl mx-auto my-12 px-4 sm:px-8 relative z-10">
         <ClimateSelector activeCity={activeCity} setActiveCity={setActiveCity} />
       </section>
 
-      {/* 4. 24-Hour Solar Flux Diurnal Curve */}
+      {/* 5. 24-Hour Solar Flux Diurnal Curve */}
       <section className="max-w-5xl mx-auto my-12 px-4 sm:px-8 relative z-10">
         <HourlyIrradianceChart />
       </section>
 
-      {/* 5. Instant Solar ROI Calculator Widget */}
+      {/* 6. Instant Solar ROI Calculator Widget */}
       <section className="max-w-5xl mx-auto my-12 px-4 sm:px-8 relative z-10">
         <div className="glass-panel p-6 sm:p-8 rounded-3xl border border-amber-500/20 relative overflow-hidden">
           <div className="absolute -right-16 -top-16 w-48 h-48 bg-amber-500/10 rounded-full blur-2xl pointer-events-none" />
@@ -219,22 +199,22 @@ const LandingPage = ({ onLaunchStudio, onOpenReport, onOpenQuote, setActiveTab }
         </div>
       </section>
 
-      {/* 6. How It Works Pipeline */}
+      {/* 7. How It Works Pipeline */}
       <section className="max-w-5xl mx-auto my-16 px-4 sm:px-8 relative z-10">
         <HowItWorks />
       </section>
 
-      {/* 7. Bankable Economics & Tariff Modeler */}
+      {/* 8. Bankable Economics & Tariff Modeler */}
       <section className="max-w-5xl mx-auto my-12 px-4 sm:px-8 relative z-10">
         <EconomicsModeler baseAnnualKwh={estYield} />
       </section>
 
-      {/* 8. Preloaded CityGML Data Schemas */}
+      {/* 9. Preloaded CityGML Data Schemas */}
       <section className="max-w-5xl mx-auto my-12 px-4 sm:px-8 relative z-10">
         <DataFileInspector onLaunchStudio={onLaunchStudio} />
       </section>
 
-      {/* 9. Architectural Topologies */}
+      {/* 10. Architectural Topologies */}
       <section className="max-w-5xl mx-auto my-16 px-4 sm:px-8 space-y-6 relative z-10">
         <div className="text-center space-y-2">
           <span className="text-[10px] font-mono text-amber-400 uppercase tracking-widest block font-bold">
@@ -277,37 +257,42 @@ const LandingPage = ({ onLaunchStudio, onOpenReport, onOpenQuote, setActiveTab }
         </div>
       </section>
 
-      {/* 10. Case Studies */}
+      {/* 11. Case Studies */}
       <section className="max-w-5xl mx-auto my-16 px-4 sm:px-8 relative z-10">
         <CaseStudies onOpenQuote={onOpenQuote} />
       </section>
 
-      {/* 11. Client Testimonials */}
+      {/* 12. Client Testimonials */}
       <section className="max-w-5xl mx-auto my-16 px-4 sm:px-8 relative z-10">
         <Testimonials />
       </section>
 
-      {/* 12. Physics Formulations Breakdown */}
+      {/* 13. Physics Formulations Breakdown */}
       <section className="max-w-5xl mx-auto my-12 px-4 sm:px-8 relative z-10">
         <PhysicsBreakdown />
       </section>
 
-      {/* 13. Technology Stack Matrix */}
+      {/* 14. Technology Stack Matrix */}
       <section className="max-w-5xl mx-auto my-12 px-4 sm:px-8 relative z-10">
         <TechStackMatrix />
       </section>
 
-      {/* 14. Project Genesis & Authors */}
+      {/* 15. Project Genesis & Authors */}
       <section className="max-w-5xl mx-auto my-12 px-4 sm:px-8 relative z-10">
         <ProjectGenesis />
       </section>
 
-      {/* 15. FAQ Knowledge Hub */}
+      {/* 16. FAQ Knowledge Hub */}
       <section className="max-w-5xl mx-auto my-12 px-4 sm:px-8 relative z-10">
         <FaqSection />
       </section>
 
-      {/* 16. Universal Footer */}
+      {/* 17. Final Call to Action */}
+      <section className="max-w-5xl mx-auto my-16 px-4 sm:px-8 relative z-10">
+        <FinalCta onOpenQuote={onOpenQuote} onLaunchStudio={onLaunchStudio} />
+      </section>
+
+      {/* 18. Universal Footer */}
       <Footer setActiveTab={setActiveTab} onOpenReport={onOpenReport} />
     </div>
   );

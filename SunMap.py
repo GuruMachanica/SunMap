@@ -1,14 +1,35 @@
 import polygon3dmodule
 import markup3dmodule
-from lxml import etree
-import irr
+try:
+    from lxml import etree
+except ImportError:
+    import xml.etree.ElementTree as etree
+try:
+    import irr
+except ImportError:
+    irr = None
 import argparse
 import glob
 import os
 import pickle
-from scipy import interpolate
+try:
+    from scipy import interpolate
+except ImportError:
+    interpolate = None
 import numpy as np
 import math
+
+def get_iter(elem, tag=None):
+    """Helper to support both lxml and standard xml.etree.ElementTree in Python 3"""
+    if hasattr(elem, 'iter'):
+        return elem.iter(tag) if tag else elem.iter()
+    return elem.getiterator(tag) if tag else elem.getiterator()
+
+def get_children(elem):
+    """Helper to get children of an XML element"""
+    if hasattr(elem, 'getchildren'):
+        return elem.getchildren()
+    return list(elem)
 
 #-- Name spaces
 ns_citygml = "http://www.opengis.net/citygml/2.0"
@@ -55,7 +76,11 @@ else:
 #-- If the TOFs are already precomputed
 if loadDict:
     with open(FACTORS, "rb") as myFile:
-        TOF_strings = pickle.load(myFile)
+        try:
+            TOF_strings = pickle.load(myFile, encoding='latin1')
+        except Exception:
+            myFile.seek(0)
+            TOF_strings = pickle.load(myFile)
     TOF = {}
 
     for azStr in TOF_strings:
@@ -216,7 +241,7 @@ class Building(object):
         self.roofsurfaces = []
         roofarea = 0.0
         openings = 0.0
-        for child in self.xml.getiterator():
+        for child in get_iter(self.xml):
             if child.tag == '{%s}RoofSurface' %ns_bldg:
                 self.roofs.append(child)
                 openings += oparea(child)
@@ -237,7 +262,7 @@ class Building(object):
         wallarea = 0.0
         openings = 0.0
         #-- Account for openings
-        for child in self.xml.getiterator():
+        for child in get_iter(self.xml):
             if child.tag == '{%s}WallSurface' %ns_bldg:
                 self.walls.append(child)
                 openings += oparea(child)
@@ -252,7 +277,7 @@ class Building(object):
         """The total area of GroundSurfaces."""
         self.grounds = []
         groundarea = 0.0
-        for child in self.xml.getiterator():
+        for child in get_iter(self.xml):
             if child.tag == '{%s}GroundSurface' %ns_bldg:
                 self.grounds.append(child)
         self.count = 0
@@ -266,14 +291,14 @@ class Building(object):
         matching = []
         self.openings = []
         openingarea = 0.0
-        for child in self.xml.getiterator():
+        for child in get_iter(self.xml):
             if child.tag == '{%s}opening' %ns_bldg:
                 matching.append(child)
                 #-- Store the list of openings
                 for o in child.findall('.//{%s}Polygon' %ns_gml):
                     self.listOfOpenings.append(o.attrib['{%s}id' %ns_gml])
         for match in matching:
-            for child in match.getiterator():
+            for child in get_iter(match):
                 if child.tag == '{%s}surfaceMember' %ns_gml:
                     self.openings.append(child)
         self.count = 0
@@ -286,9 +311,6 @@ class Building(object):
         """The total area of all surfaces."""
         self.allareas = []
         allarea = 0.0
-        # for child in self.xml.getiterator():
-        #   if child.tag == '{%s}surfaceMember' %ns_gml:
-        #       self.allareas.append(child)
         self.allareas = self.xml.findall('.//{%s}Polygon' %ns_gml)
         self.count = 0
         for poly in self.allareas:
@@ -301,12 +323,12 @@ def oparea(xmlelement):
     matching = []
     openings = []
     openingarea = 0.0
-    for child in xmlelement.getiterator():
+    for child in get_iter(xmlelement):
         if child.tag == '{%s}opening' %ns_bldg:
             #print 'opening'
             matching.append(child)
     for match in matching:
-        for child in match.getiterator():
+        for child in get_iter(match):
             if child.tag == '{%s}surfaceMember' %ns_gml:
                 openings.append(child)
     for openingsurface in openings:
@@ -330,14 +352,14 @@ for f in glob.glob(os.path.join(DIRECTORY, "*.gml")):
     roofsurfacedata = {}
 
     #-- Find all instances of cityObjectMember and put them in a list
-    for obj in root.getiterator('{%s}cityObjectMember'% ns_citygml):
+    for obj in get_iter(root, '{%s}cityObjectMember'% ns_citygml):
         cityObjects.append(obj)
 
     print(FILENAME)
     print("\tThere are", len(cityObjects), "cityObject(s) in this CityGML file")
 
     for cityObject in cityObjects:
-        for child in cityObject.getchildren():
+        for child in get_children(cityObject):
             if child.tag == '{%s}Building' %ns_bldg:
                 buildings.append(child)
 

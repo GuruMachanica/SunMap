@@ -1,4 +1,7 @@
-from lxml import etree
+try:
+    from lxml import etree
+except ImportError:
+    import xml.etree.ElementTree as etree
 
 #-- Name spaces
 ns_citygml="http://www.opengis.net/citygml/2.0"

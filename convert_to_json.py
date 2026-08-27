@@ -9,7 +9,10 @@ Converts CityGML solar analysis results to JSON format for 3D visualization
 import json
 import os
 import argparse
-from lxml import etree
+try:
+    from lxml import etree
+except ImportError:
+    import xml.etree.ElementTree as etree
 import numpy as np
 
 # Namespaces for CityGML

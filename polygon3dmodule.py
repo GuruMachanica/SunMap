@@ -1,8 +1,14 @@
 import math
 import markup3dmodule
-from lxml import etree
+try:
+    from lxml import etree
+except ImportError:
+    import xml.etree.ElementTree as etree
 import copy
-import triangle
+try:
+    import triangle
+except ImportError:
+    triangle = None
 import numpy as np
 
 def getAreaOfGML(poly, height=True):

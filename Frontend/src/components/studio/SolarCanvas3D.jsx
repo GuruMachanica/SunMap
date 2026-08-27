@@ -1,12 +1,12 @@
-import React, { useEffect, useRef, useState, useImperativeHandle, forwardRef } from "react";
+import React, { useEffect, useRef, useImperativeHandle, forwardRef } from "react";
 import * as THREE from "three";
 import topologiesData from "../../datasets/topologies_dataset.json";
 
 const CAMERA_PRESETS = [
-  { id: "orbit", label: "Neighborhood 3D", pos: [46, 32, 52], target: [0, 4, 0] },
-  { id: "top", label: "City Map (2D)", pos: [0, 85, 0.01], target: [0, 0, 0] },
-  { id: "close", label: "Rooftop Zoom", pos: [14, 18, 14], target: [0, 9, 0] },
-  { id: "street", label: "Street Level", pos: [38, 3.8, 38], target: [0, 5, 0] }
+  { id: "orbit", label: "Neighborhood 3D", pos: [52, 36, 58], target: [0, 4, 0] },
+  { id: "top", label: "City Map (2D)", pos: [0, 110, 0.01], target: [0, 0, 0] },
+  { id: "close", label: "Rooftop Zoom", pos: [16, 20, 16], target: [0, 9, 0] },
+  { id: "street", label: "Street Level", pos: [44, 4.2, 44], target: [0, 5, 0] }
 ];
 
 const SolarCanvas3D = forwardRef(({
@@ -37,7 +37,7 @@ const SolarCanvas3D = forwardRef(({
     }
   }));
 
-  // 1. Scene, Camera, WebGL Renderer Initialization
+  // 1. Scene, Camera, WebGL Renderer
   useEffect(() => {
     const currentMount = mountRef.current;
     if (!currentMount) return;
@@ -47,11 +47,11 @@ const SolarCanvas3D = forwardRef(({
 
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0x0a0e17);
-    scene.fog = new THREE.FogExp2(0x0a0e17, 0.006);
+    scene.fog = new THREE.FogExp2(0x0a0e17, 0.005);
     sceneRef.current = scene;
 
-    const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 2000);
-    camera.position.set(46, 32, 52);
+    const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 2500);
+    camera.position.set(52, 36, 58);
     cameraRef.current = camera;
 
     const renderer = new THREE.WebGLRenderer({
@@ -66,41 +66,38 @@ const SolarCanvas3D = forwardRef(({
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.3;
+    renderer.toneMappingExposure = 1.35;
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     currentMount.appendChild(renderer.domElement);
 
-    // Dynamic Atmosphere & Natural Illumination
-    const hemiLight = new THREE.HemisphereLight(0xbae6fd, 0x1c1917, 0.85);
+    const hemiLight = new THREE.HemisphereLight(0xbae6fd, 0x1c1917, 0.9);
     scene.add(hemiLight);
 
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.35);
     scene.add(ambientLight);
 
-    const sunLight = new THREE.DirectionalLight(0xfffbeb, 4.8);
+    const sunLight = new THREE.DirectionalLight(0xfffbeb, 5.0);
     sunLight.castShadow = true;
     sunLight.shadow.mapSize.width = 4096;
     sunLight.shadow.mapSize.height = 4096;
     sunLight.shadow.camera.near = 2.0;
-    sunLight.shadow.camera.far = 240;
-    sunLight.shadow.camera.left = -70;
-    sunLight.shadow.camera.right = 70;
-    sunLight.shadow.camera.top = 70;
-    sunLight.shadow.camera.bottom = -70;
+    sunLight.shadow.camera.far = 300;
+    sunLight.shadow.camera.left = -90;
+    sunLight.shadow.camera.right = 90;
+    sunLight.shadow.camera.top = 90;
+    sunLight.shadow.camera.bottom = -90;
     sunLight.shadow.bias = -0.00025;
-    sunLight.shadow.radius = 1.5;
+    sunLight.shadow.radius = 1.4;
     scene.add(sunLight);
     sunLightRef.current = sunLight;
 
-    // Glowing Sun Celestial Sphere with Corona
-    const sunGeo = new THREE.SphereGeometry(3.2, 32, 32);
+    const sunGeo = new THREE.SphereGeometry(3.6, 32, 32);
     const sunMat = new THREE.MeshBasicMaterial({ color: 0xffd159 });
     const sunSphere = new THREE.Mesh(sunGeo, sunMat);
     scene.add(sunSphere);
     sunSphereRef.current = sunSphere;
 
-    // Base Terrain Plane with Asphalt, Grass & CAD Grid
-    const groundGeo = new THREE.PlaneGeometry(240, 240);
+    const groundGeo = new THREE.PlaneGeometry(320, 320);
     const groundMat = new THREE.MeshStandardMaterial({
       color: 0x0f141c,
       roughness: 0.95,
@@ -111,7 +108,7 @@ const SolarCanvas3D = forwardRef(({
     ground.receiveShadow = true;
     scene.add(ground);
 
-    const gridHelper = new THREE.GridHelper(240, 120, 0x1e293b, 0x0f172a);
+    const gridHelper = new THREE.GridHelper(320, 160, 0x1e293b, 0x0f172a);
     gridHelper.position.y = 0.02;
     scene.add(gridHelper);
 
@@ -119,13 +116,12 @@ const SolarCanvas3D = forwardRef(({
     scene.add(modelsGroup);
     modelsGroupRef.current = modelsGroup;
 
-    // Smooth Orbit & Pan Controller
     let isDragging = false;
     let isPanning = false;
     let previousMousePosition = { x: 0, y: 0 };
     let theta = Math.PI / 4.2;
     let phi = Math.PI / 4.8;
-    let radius = 72;
+    let radius = 84;
     let target = new THREE.Vector3(0, 4, 0);
 
     const updateCameraPos = () => {
@@ -165,7 +161,7 @@ const SolarCanvas3D = forwardRef(({
     };
 
     const onWheel = (e) => {
-      radius = Math.max(10, Math.min(160, radius + e.deltaY * 0.04));
+      radius = Math.max(10, Math.min(220, radius + e.deltaY * 0.04));
       updateCameraPos();
     };
 
@@ -209,13 +205,13 @@ const SolarCanvas3D = forwardRef(({
     };
   }, []);
 
-  // 2. Dynamic Solar Ray Tracing & Celestial Arc Coordinates
+  // 2. Solar Ray Tracing & Celestial Arc Coordinates
   useEffect(() => {
     if (!sunLightRef.current || !sunSphereRef.current || !sceneRef.current) return;
 
     const radElev = (elevation * Math.PI) / 180;
     const radAzim = (azimuth * Math.PI) / 180;
-    const dist = 76;
+    const dist = 88;
 
     const x = dist * Math.cos(radElev) * Math.sin(radAzim);
     const y = Math.max(1.8, dist * Math.sin(radElev));
@@ -242,7 +238,7 @@ const SolarCanvas3D = forwardRef(({
     }
   }, [elevation, azimuth]);
 
-  // 3. Ultra-Dense Real-World City & Village Procedural Topology Builder
+  // 3. Dense Procedural Real-World Architecture Generator
   useEffect(() => {
     if (!modelsGroupRef.current) return;
     const group = modelsGroupRef.current;
@@ -254,7 +250,6 @@ const SolarCanvas3D = forwardRef(({
     }
     solarPanelsRef.current = [];
 
-    // Materials Palette
     const getBuildingMat = (color = 0x334155, roughness = 0.65, metalness = 0.25) => {
       if (shadingMode === "heatmap") return new THREE.MeshStandardMaterial({ color: 0x2563eb, roughness: 0.5, metalness: 0.2 });
       if (shadingMode === "occlusion") return new THREE.MeshStandardMaterial({ color: 0x242424, roughness: 0.95 });
@@ -309,7 +304,6 @@ const SolarCanvas3D = forwardRef(({
       });
     };
 
-    // Helper: Add Detailed Tree with Trunk and Multi-tier Foliage
     const addDetailedTree = (x, z, scale = 1.0) => {
       const trunk = new THREE.Mesh(
         new THREE.CylinderGeometry(0.25 * scale, 0.38 * scale, 2.2 * scale, 8),
@@ -336,7 +330,6 @@ const SolarCanvas3D = forwardRef(({
       group.add(f2);
     };
 
-    // Helper: Add Detailed Vehicle with Wheels and Windows
     const addDetailedVehicle = (x, z, rotY = 0, color = 0x3b82f6) => {
       const carGroup = new THREE.Group();
       carGroup.position.set(x, 0, z);
@@ -358,7 +351,6 @@ const SolarCanvas3D = forwardRef(({
       cabin.castShadow = true;
       carGroup.add(cabin);
 
-      // 4 Wheels
       const wheelMat = new THREE.MeshStandardMaterial({ color: 0x111111, roughness: 0.9 });
       [[-1.2, 0.9], [1.2, 0.9], [-1.2, -0.9], [1.2, -0.9]].forEach(([wx, wz]) => {
         const wheel = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.35, 0.25, 12), wheelMat);
@@ -371,7 +363,6 @@ const SolarCanvas3D = forwardRef(({
       group.add(carGroup);
     };
 
-    // Helper: Add Streetlight Pole with Glowing Lamp Head
     const addStreetlight = (x, z, rotY = 0) => {
       const pole = new THREE.Mesh(
         new THREE.CylinderGeometry(0.1, 0.14, 5.5, 8),
@@ -397,7 +388,6 @@ const SolarCanvas3D = forwardRef(({
       group.add(lamp);
     };
 
-    // Helper: Add Road Strip with Dashed Line
     const addRoad = (centerX, centerZ, width, length, isHorizontal = true) => {
       const road = new THREE.Mesh(
         new THREE.PlaneGeometry(isHorizontal ? length : width, isHorizontal ? width : length),
@@ -408,7 +398,6 @@ const SolarCanvas3D = forwardRef(({
       road.receiveShadow = true;
       group.add(road);
 
-      // Sidewalk Curbs
       const curb1 = new THREE.Mesh(
         new THREE.BoxGeometry(isHorizontal ? length : 1.2, 0.2, isHorizontal ? 1.2 : length),
         sidewalkMat
@@ -433,7 +422,6 @@ const SolarCanvas3D = forwardRef(({
       curb2.receiveShadow = true;
       group.add(curb2);
 
-      // Dashed Centerline Markings
       const segCount = Math.floor(length / 4);
       for (let i = 0; i < segCount; i++) {
         const mark = new THREE.Mesh(
@@ -451,12 +439,10 @@ const SolarCanvas3D = forwardRef(({
       }
     };
 
-    // Helper: Add High-Precision Photovoltaic Array
     const addSolarArray = (startX, startZ, rows, cols, panelW, panelD, roofY, baseTiltRad = 0) => {
       const activeTilt = baseTiltRad !== 0 ? baseTiltRad : (panelTilt * Math.PI) / 180;
       for (let r = 0; r < rows; r++) {
         for (let c = 0; c < cols; c++) {
-          // Panel Frame
           const panelGeo = new THREE.BoxGeometry(panelW, 0.12, panelD);
           const panelMesh = new THREE.Mesh(panelGeo, getSolarPanelMat());
           panelMesh.position.set(
@@ -470,7 +456,6 @@ const SolarCanvas3D = forwardRef(({
           group.add(panelMesh);
           solarPanelsRef.current.push(panelMesh);
 
-          // Silver Mounting Strut Legs
           const strut = new THREE.Mesh(
             new THREE.CylinderGeometry(0.04, 0.04, 0.35, 6),
             getBuildingMat(0x94a3b8, 0.3, 0.8)
@@ -484,133 +469,138 @@ const SolarCanvas3D = forwardRef(({
     const topo = topologiesData.topologies[scenePreset] || topologiesData.topologies.commercial;
 
     // =========================================================================
-    // 1. TOPOLOGY: COMMERCIAL TECH & LOGISTICS CAMPUS
+    // 1. COMMERCIAL TECH & LOGISTICS CAMPUS (Massive Expansion)
     // =========================================================================
     if (scenePreset === "commercial") {
-      // Main Perimeter & Internal Ring Roads
-      addRoad(0, 24, 9, 120, true);
-      addRoad(-32, 0, 8, 80, false);
-      addRoad(36, 0, 8, 80, false);
+      addRoad(0, 32, 10, 160, true);
+      addRoad(-42, 0, 9, 110, false);
+      addRoad(46, 0, 9, 110, false);
+      addRoad(0, -42, 8, 160, true);
 
       // Main HQ Building (Multi-tiered Corporate Tower)
-      const b1 = new THREE.Mesh(new THREE.BoxGeometry(22, 16, 20), getBuildingMat(0x0f172a));
-      b1.position.set(-8, 8, -4);
+      const b1 = new THREE.Mesh(new THREE.BoxGeometry(26, 18, 22), getBuildingMat(0x0f172a));
+      b1.position.set(-12, 9, -4);
       b1.castShadow = true;
       b1.receiveShadow = true;
       group.add(b1);
 
-      // Glass Curtain Facade
-      const glass1 = new THREE.Mesh(new THREE.BoxGeometry(22.3, 12, 20.3), glassCurtainMat);
-      glass1.position.set(-8, 9, -4);
+      const glass1 = new THREE.Mesh(new THREE.BoxGeometry(26.3, 14, 22.3), glassCurtainMat);
+      glass1.position.set(-12, 10, -4);
       group.add(glass1);
 
-      // Rooftop HVAC Central Chiller Units
-      [[-14, 2], [-2, 2], [-14, -8], [-2, -8]].forEach(([hx, hz]) => {
-        const hvac = new THREE.Mesh(new THREE.BoxGeometry(3.5, 1.8, 2.5), getBuildingMat(0x64748b));
-        hvac.position.set(hx, 17, hz);
+      // Chiller Units
+      [[-20, 3], [-4, 3], [-20, -9], [-4, -9]].forEach(([hx, hz]) => {
+        const hvac = new THREE.Mesh(new THREE.BoxGeometry(4, 2, 3), getBuildingMat(0x64748b));
+        hvac.position.set(hx, 19, hz);
         hvac.castShadow = true;
         group.add(hvac);
       });
 
-      // Rooftop Solar Array
-      addSolarArray(-16, -11, 7, 7, 2.0, 1.4, 16.3);
+      addSolarArray(-22, -12, 8, 8, 2.0, 1.4, 18.3);
 
       // Logistics Distribution Wing
-      const b2 = new THREE.Mesh(new THREE.BoxGeometry(18, 9, 22), getBuildingMat(0x1e293b));
-      b2.position.set(16, 4.5, -4);
+      const b2 = new THREE.Mesh(new THREE.BoxGeometry(24, 10, 26), getBuildingMat(0x1e293b));
+      b2.position.set(18, 5, -4);
       b2.castShadow = true;
       b2.receiveShadow = true;
       group.add(b2);
 
-      const glass2 = new THREE.Mesh(new THREE.BoxGeometry(18.3, 5, 22.3), glassCurtainMat);
-      glass2.position.set(16, 5, -4);
+      const glass2 = new THREE.Mesh(new THREE.BoxGeometry(24.3, 6, 26.3), glassCurtainMat);
+      glass2.position.set(18, 6, -4);
       group.add(glass2);
 
-      addSolarArray(10, -12, 6, 4, 2.0, 1.5, 9.3);
+      addSolarArray(8, -15, 8, 6, 2.0, 1.5, 10.3);
 
-      // Architectural Skybridge
-      const bridge = new THREE.Mesh(new THREE.BoxGeometry(6, 2.5, 3.2), glassCurtainMat);
-      bridge.position.set(4, 7.5, -4);
+      // Skybridge
+      const bridge = new THREE.Mesh(new THREE.BoxGeometry(8, 2.8, 3.5), glassCurtainMat);
+      bridge.position.set(3, 8.5, -4);
       group.add(bridge);
 
-      // R&D Labs & Data Center Block
-      const b3 = new THREE.Mesh(new THREE.BoxGeometry(16, 12, 14), getBuildingMat(0x1e293b));
-      b3.position.set(-8, 6, -26);
+      // R&D Innovation Hub
+      const b3 = new THREE.Mesh(new THREE.BoxGeometry(20, 14, 16), getBuildingMat(0x1e293b));
+      b3.position.set(-12, 7, -28);
       b3.castShadow = true;
       b3.receiveShadow = true;
       group.add(b3);
 
-      addSolarArray(-13, -31, 4, 5, 2.0, 1.4, 12.3);
+      addSolarArray(-18, -34, 5, 6, 2.0, 1.4, 14.3);
 
-      // Security Guardhouse
-      const guard = new THREE.Mesh(new THREE.BoxGeometry(4, 3, 4), getBuildingMat(0x334155));
-      guard.position.set(-24, 1.5, 18);
-      guard.castShadow = true;
-      group.add(guard);
+      // Data Center Facility
+      const b4 = new THREE.Mesh(new THREE.BoxGeometry(22, 11, 16), getBuildingMat(0x0f172a));
+      b4.position.set(18, 5.5, -28);
+      b4.castShadow = true;
+      b4.receiveShadow = true;
+      group.add(b4);
 
-      // 4 Solar Carport Canopies with Parking Bays
-      [-16, -6, 4, 14].forEach((cpX) => {
-        const pole1 = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.25, 3.5, 8), getBuildingMat(0x94a3b8));
-        pole1.position.set(cpX, 1.75, 14);
-        pole1.castShadow = true;
-        group.add(pole1);
+      addSolarArray(10, -34, 4, 7, 2.0, 1.4, 11.3);
 
-        const canopy = new THREE.Mesh(new THREE.BoxGeometry(7.5, 0.15, 6.0), getSolarPanelMat());
-        canopy.position.set(cpX, 3.6, 14);
+      // 6 Photovoltaic Carports
+      [-28, -18, -8, 4, 14, 24].forEach((cpX) => {
+        const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.25, 3.5, 8), getBuildingMat(0x94a3b8));
+        pole.position.set(cpX, 1.75, 18);
+        pole.castShadow = true;
+        group.add(pole);
+
+        const canopy = new THREE.Mesh(new THREE.BoxGeometry(8.0, 0.15, 6.4), getSolarPanelMat());
+        canopy.position.set(cpX, 3.6, 18);
         canopy.rotation.x = -0.22;
         canopy.castShadow = true;
         canopy.receiveShadow = true;
         group.add(canopy);
+
+        addDetailedVehicle(cpX, 18, 1.57, [0xef4444, 0x3b82f6, 0xffffff, 0x10b981, 0xf59e0b, 0x8b5cf6][Math.abs(cpX) % 6]);
       });
 
-      // Parked & Driving Vehicles
-      addDetailedVehicle(-16, 14, 1.57, 0xef4444);
-      addDetailedVehicle(-6, 14, 1.57, 0x3b82f6);
-      addDetailedVehicle(4, 14, 1.57, 0xffffff);
-      addDetailedVehicle(14, 14, 1.57, 0x10b981);
-      addDetailedVehicle(8, 24, 0, 0xf59e0b);
-      addDetailedVehicle(-12, 24, Math.PI, 0x9333ea);
+      // Driving Traffic
+      addDetailedVehicle(14, 32, 0, 0xf59e0b);
+      addDetailedVehicle(-18, 32, Math.PI, 0x3b82f6);
+      addDetailedVehicle(-42, 10, 1.57, 0xef4444);
+      addDetailedVehicle(46, -10, -1.57, 0x10b981);
 
-      // Streetlights along road
-      [-24, -8, 8, 24].forEach((lx) => {
-        addStreetlight(lx, 20, Math.PI / 2);
-      });
-
-      // Trees & Plaza Fountain
-      const fountain = new THREE.Mesh(new THREE.CylinderGeometry(3.5, 4.0, 0.8, 16), getBuildingMat(0x475569));
-      fountain.position.set(4, 0.4, 6);
+      // Plaza Water Fountain & Trees
+      const fountain = new THREE.Mesh(new THREE.CylinderGeometry(4.2, 4.8, 0.8, 16), getBuildingMat(0x475569));
+      fountain.position.set(3, 0.4, 6);
       group.add(fountain);
 
-      const water = new THREE.Mesh(new THREE.CylinderGeometry(3.2, 3.2, 0.7, 16), waterMat);
-      water.position.set(4, 0.5, 6);
+      const water = new THREE.Mesh(new THREE.CylinderGeometry(3.8, 3.8, 0.7, 16), waterMat);
+      water.position.set(3, 0.5, 6);
       group.add(water);
 
-      [-26, -26, -26, 28, 28, 28, 0, 16].forEach((tx, idx) => {
-        const tz = -20 + idx * 8;
-        addDetailedTree(tx, tz, 1.0 + (idx % 3) * 0.2);
-      });
+      for (let tx = -38; tx <= 42; tx += 10) {
+        addDetailedTree(tx, 26, 1.1);
+        addDetailedTree(tx, -38, 1.2);
+        addStreetlight(tx, 28, Math.PI / 2);
+      }
     }
 
     // =========================================================================
-    // 2. TOPOLOGY: URBAN HIGH-RISE METROPOLITAN DISTRICT
+    // 2. METROPOLITAN HIGH-RISE DISTRICT (16 Skyscraper Towers)
     // =========================================================================
     else if (scenePreset === "highrise") {
-      // 4-Lane Metropolitan Boulevards (Grid System)
-      addRoad(0, 0, 10, 140, true);
-      addRoad(0, 0, 10, 140, false);
-      addRoad(0, 42, 8, 140, true);
-      addRoad(0, -42, 8, 140, true);
+      addRoad(0, 0, 12, 180, true);
+      addRoad(0, 0, 12, 180, false);
+      addRoad(0, 52, 9, 180, true);
+      addRoad(0, -52, 9, 180, true);
+      addRoad(52, 0, 9, 180, false);
+      addRoad(-52, 0, 9, 180, false);
 
-      // 8 High-Density Skyscrapers
       const skyscrapers = [
-        { x: -18, z: -18, w: 14, d: 14, h: 42, color: 0x0f172a, glassH: 36, heli: true },
-        { x: 18, z: -18, w: 12, d: 12, h: 36, color: 0x1e293b, glassH: 30 },
-        { x: -18, z: 18, w: 13, d: 13, h: 32, color: 0x334155, glassH: 26 },
-        { x: 18, z: 18, w: 14, d: 14, h: 46, color: 0x0f172a, glassH: 40, crown: true },
-        { x: -38, z: -18, w: 11, d: 11, h: 24, color: 0x1e293b, glassH: 18 },
-        { x: 38, z: -18, w: 11, d: 11, h: 28, color: 0x334155, glassH: 22 },
-        { x: -38, z: 18, w: 10, d: 10, h: 22, color: 0x1e293b, glassH: 16 },
-        { x: 38, z: 18, w: 12, d: 12, h: 26, color: 0x0f172a, glassH: 20 }
+        { x: -24, z: -24, w: 16, d: 16, h: 54, color: 0x0f172a, glassH: 46, crown: true },
+        { x: 24, z: -24, w: 14, d: 14, h: 44, color: 0x1e293b, glassH: 38, heli: true },
+        { x: -24, z: 24, w: 15, d: 15, h: 48, color: 0x334155, glassH: 42, heli: true },
+        { x: 24, z: 24, w: 16, d: 16, h: 58, color: 0x0f172a, glassH: 50, crown: true },
+        { x: -48, z: -24, w: 12, d: 12, h: 32, color: 0x1e293b, glassH: 26 },
+        { x: 48, z: -24, w: 13, d: 13, h: 36, color: 0x334155, glassH: 30 },
+        { x: -48, z: 24, w: 12, d: 12, h: 28, color: 0x1e293b, glassH: 22 },
+        { x: 48, z: 24, w: 14, d: 14, h: 34, color: 0x0f172a, glassH: 28 },
+        { x: -24, z: -48, w: 13, d: 13, h: 38, color: 0x334155, glassH: 32 },
+        { x: 24, z: -48, w: 12, d: 12, h: 30, color: 0x1e293b, glassH: 24 },
+        { x: -24, z: 48, w: 14, d: 14, h: 36, color: 0x0f172a, glassH: 30 },
+        { x: 24, z: 48, w: 13, d: 13, h: 40, color: 0x334155, glassH: 34 },
+        { x: -48, z: -48, w: 11, d: 11, h: 24, color: 0x1e293b, glassH: 18 },
+        { x: 48, z: -48, w: 11, d: 11, h: 26, color: 0x0f172a, glassH: 20 },
+        { x: -48, z: 48, w: 10, d: 10, h: 22, color: 0x334155, glassH: 16 },
+        { x: 48, z: 48, w: 12, d: 12, h: 28, color: 0x1e293b, glassH: 22 }
       ];
 
       skyscrapers.forEach((t) => {
@@ -620,74 +610,86 @@ const SolarCanvas3D = forwardRef(({
         b.receiveShadow = true;
         group.add(b);
 
-        // Glass curtain facade
         const g = new THREE.Mesh(new THREE.BoxGeometry(t.w + 0.25, t.glassH, t.d + 0.25), glassCurtainMat);
         g.position.set(t.x, t.h / 2, t.z);
         group.add(g);
 
-        // Rooftop Solar Array
-        addSolarArray(t.x - t.w / 2 + 1.6, t.z - t.d / 2 + 1.6, 3, 3, 1.8, 1.4, t.h + 0.2);
+        addSolarArray(t.x - t.w / 2 + 1.8, t.z - t.d / 2 + 1.8, 3, 3, 2.0, 1.5, t.h + 0.2);
 
-        // Rooftop Helipad
         if (t.heli) {
-          const pad = new THREE.Mesh(new THREE.CylinderGeometry(4.5, 4.5, 0.2, 16), getBuildingMat(0xffd159));
+          const pad = new THREE.Mesh(new THREE.CylinderGeometry(5.0, 5.0, 0.2, 16), getBuildingMat(0xffd159));
           pad.position.set(t.x, t.h + 0.15, t.z);
           group.add(pad);
         }
 
-        // Spire Antenna
         if (t.crown) {
-          const spire = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.4, 10, 8), getBuildingMat(0xffffff, 0.2, 0.9));
-          spire.position.set(t.x, t.h + 5, t.z);
+          const spire = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.5, 12, 8), getBuildingMat(0xffffff, 0.2, 0.9));
+          spire.position.set(t.x, t.h + 6, t.z);
           spire.castShadow = true;
           group.add(spire);
 
-          const beacon = new THREE.Mesh(new THREE.SphereGeometry(0.35, 12, 12), new THREE.MeshBasicMaterial({ color: 0xef4444 }));
-          beacon.position.set(t.x, t.h + 10.2, t.z);
+          const beacon = new THREE.Mesh(new THREE.SphereGeometry(0.4, 12, 12), new THREE.MeshBasicMaterial({ color: 0xef4444 }));
+          beacon.position.set(t.x, t.h + 12.2, t.z);
           group.add(beacon);
         }
       });
 
-      // Skybridge Connecting Towers
-      const skybridge = new THREE.Mesh(new THREE.BoxGeometry(14, 3, 2.8), glassCurtainMat);
-      skybridge.position.set(0, 26, -18);
-      group.add(skybridge);
+      // Skybridges
+      const sb1 = new THREE.Mesh(new THREE.BoxGeometry(16, 3.2, 3.0), glassCurtainMat);
+      sb1.position.set(0, 32, -24);
+      group.add(sb1);
 
-      // Boulevard Traffic
-      addDetailedVehicle(-25, 0, 1.57, 0xef4444);
-      addDetailedVehicle(10, 0, 1.57, 0x3b82f6);
-      addDetailedVehicle(0, -20, 0, 0xf59e0b);
-      addDetailedVehicle(0, 24, Math.PI, 0x10b981);
-      addDetailedVehicle(25, 42, 1.57, 0xffffff);
+      const sb2 = new THREE.Mesh(new THREE.BoxGeometry(16, 3.2, 3.0), glassCurtainMat);
+      sb2.position.set(0, 36, 24);
+      group.add(sb2);
 
-      // Plaza Trees & Streetlights
-      [-30, -10, 10, 30].forEach((px) => {
-        addStreetlight(px, 7, 0);
-        addStreetlight(px, -7, Math.PI);
-        addDetailedTree(px, 10, 0.9);
-        addDetailedTree(px, -10, 0.9);
+      // Heavy Traffic Flow
+      addDetailedVehicle(-36, 0, 1.57, 0xef4444);
+      addDetailedVehicle(18, 0, 1.57, 0x3b82f6);
+      addDetailedVehicle(0, -32, 0, 0xf59e0b);
+      addDetailedVehicle(0, 36, Math.PI, 0x10b981);
+      addDetailedVehicle(36, 52, 1.57, 0xffffff);
+      addDetailedVehicle(-24, -52, -1.57, 0x9333ea);
+
+      // Plazas & Streetlights
+      [-40, -20, 20, 40].forEach((px) => {
+        addStreetlight(px, 8, 0);
+        addStreetlight(px, -8, Math.PI);
+        addDetailedTree(px, 12, 1.0);
+        addDetailedTree(px, -12, 1.0);
       });
     }
 
     // =========================================================================
-    // 3. TOPOLOGY: SUBURBAN RESIDENTIAL VILLAGE
+    // 3. SUBURBAN RESIDENTIAL VILLAGE (16 Detailed Eco-Villas)
     // =========================================================================
     else if (scenePreset === "residential") {
-      // Village Loop Asphalt Roads
-      addRoad(0, 0, 7.5, 120, true);
-      addRoad(-32, 0, 6.5, 60, false);
-      addRoad(32, 0, 6.5, 60, false);
+      addRoad(0, 0, 8.5, 160, true);
+      addRoad(-46, 0, 7.5, 90, false);
+      addRoad(46, 0, 7.5, 90, false);
+      addRoad(0, 42, 7.5, 160, true);
+      addRoad(0, -42, 7.5, 160, true);
 
-      // 10 Detailed Residential Homes with Gable & Hip Roofs
       const villageHomes = [
-        { x: -22, z: -16, roofRot: 0, wallColor: 0x334155, roofColor: 0x991b1b },
-        { x: -8, z: -16, roofRot: 0, wallColor: 0x1e293b, roofColor: 0x0f172a },
-        { x: 8, z: -16, roofRot: 0, wallColor: 0x334155, roofColor: 0x1e3a8a },
-        { x: 22, z: -16, roofRot: 0, wallColor: 0x1e293b, roofColor: 0x991b1b },
-        { x: -22, z: 16, roofRot: Math.PI, wallColor: 0x1e293b, roofColor: 0x0f172a },
-        { x: -8, z: 16, roofRot: Math.PI, wallColor: 0x334155, roofColor: 0x1e3a8a },
-        { x: 8, z: 16, roofRot: Math.PI, wallColor: 0x1e293b, roofColor: 0x991b1b },
-        { x: 22, z: 16, roofRot: Math.PI, wallColor: 0x334155, roofColor: 0x0f172a }
+        // North Row 1
+        { x: -34, z: -18, roofRot: 0, wallColor: 0x334155, roofColor: 0x991b1b },
+        { x: -18, z: -18, roofRot: 0, wallColor: 0x1e293b, roofColor: 0x0f172a },
+        { x: 0, z: -18, roofRot: 0, wallColor: 0x334155, roofColor: 0x1e3a8a },
+        { x: 18, z: -18, roofRot: 0, wallColor: 0x1e293b, roofColor: 0x991b1b },
+        { x: 34, z: -18, roofRot: 0, wallColor: 0x334155, roofColor: 0x0f172a },
+        // South Row 1
+        { x: -34, z: 18, roofRot: Math.PI, wallColor: 0x1e293b, roofColor: 0x0f172a },
+        { x: -18, z: 18, roofRot: Math.PI, wallColor: 0x334155, roofColor: 0x1e3a8a },
+        { x: 0, z: 18, roofRot: Math.PI, wallColor: 0x1e293b, roofColor: 0x991b1b },
+        { x: 18, z: 18, roofRot: Math.PI, wallColor: 0x334155, roofColor: 0x0f172a },
+        { x: 34, z: 18, roofRot: Math.PI, wallColor: 0x1e293b, roofColor: 0x1e3a8a },
+        // Outer Rows
+        { x: -28, z: -58, roofRot: 0, wallColor: 0x334155, roofColor: 0x991b1b },
+        { x: 0, z: -58, roofRot: 0, wallColor: 0x1e293b, roofColor: 0x0f172a },
+        { x: 28, z: -58, roofRot: 0, wallColor: 0x334155, roofColor: 0x1e3a8a },
+        { x: -28, z: 58, roofRot: Math.PI, wallColor: 0x1e293b, roofColor: 0x991b1b },
+        { x: 0, z: 58, roofRot: Math.PI, wallColor: 0x334155, roofColor: 0x0f172a },
+        { x: 28, z: 58, roofRot: Math.PI, wallColor: 0x1e293b, roofColor: 0x1e3a8a }
       ];
 
       villageHomes.forEach((home) => {
@@ -695,83 +697,76 @@ const SolarCanvas3D = forwardRef(({
         homeGroup.position.set(home.x, 0, home.z);
         homeGroup.rotation.y = home.roofRot;
 
-        // Ground Floor Base
-        const base = new THREE.Mesh(new THREE.BoxGeometry(9.5, 4.2, 9.5), getBuildingMat(home.wallColor));
-        base.position.y = 2.1;
+        const base = new THREE.Mesh(new THREE.BoxGeometry(10.5, 4.5, 10.5), getBuildingMat(home.wallColor));
+        base.position.y = 2.25;
         base.castShadow = true;
         base.receiveShadow = true;
         homeGroup.add(base);
 
-        // Windows & Doors
-        const door = new THREE.Mesh(new THREE.BoxGeometry(1.2, 2.2, 0.2), getBuildingMat(0x3e2723));
-        door.position.set(0, 1.1, 4.8);
+        const door = new THREE.Mesh(new THREE.BoxGeometry(1.4, 2.4, 0.2), getBuildingMat(0x3e2723));
+        door.position.set(0, 1.2, 5.3);
         homeGroup.add(door);
 
-        const win1 = new THREE.Mesh(new THREE.BoxGeometry(1.8, 1.4, 0.2), glassCurtainMat);
-        win1.position.set(-2.6, 2.2, 4.8);
+        const win1 = new THREE.Mesh(new THREE.BoxGeometry(2.0, 1.5, 0.2), glassCurtainMat);
+        win1.position.set(-3.0, 2.4, 5.3);
         homeGroup.add(win1);
 
-        const win2 = new THREE.Mesh(new THREE.BoxGeometry(1.8, 1.4, 0.2), glassCurtainMat);
-        win2.position.set(2.6, 2.2, 4.8);
+        const win2 = new THREE.Mesh(new THREE.BoxGeometry(2.0, 1.5, 0.2), glassCurtainMat);
+        win2.position.set(3.0, 2.4, 5.3);
         homeGroup.add(win2);
 
-        // Pitched Gable Roof
-        const roof = new THREE.Mesh(new THREE.ConeGeometry(7.8, 3.8, 4), getBuildingMat(home.roofColor));
-        roof.position.y = 5.9;
+        const roof = new THREE.Mesh(new THREE.ConeGeometry(8.5, 4.2, 4), getBuildingMat(home.roofColor));
+        roof.position.y = 6.4;
         roof.rotation.y = Math.PI / 4;
         roof.castShadow = true;
         roof.receiveShadow = true;
         homeGroup.add(roof);
 
-        // Chimney
-        const chimney = new THREE.Mesh(new THREE.BoxGeometry(0.8, 2.4, 0.8), getBuildingMat(0x78350f));
-        chimney.position.set(2.2, 6.2, 1.5);
+        const chimney = new THREE.Mesh(new THREE.BoxGeometry(0.9, 2.6, 0.9), getBuildingMat(0x78350f));
+        chimney.position.set(2.4, 6.8, 1.6);
         chimney.castShadow = true;
         homeGroup.add(chimney);
 
-        // South-Facing Rooftop Solar Array
-        addSolarArray(home.x - 2.8, home.z + (home.roofRot === 0 ? 1.5 : -1.5), 2, 3, 1.6, 1.2, 5.2, -0.42);
+        addSolarArray(home.x - 3.2, home.z + (home.roofRot === 0 ? 1.6 : -1.6), 2, 3, 1.8, 1.3, 5.5, -0.42);
 
-        // Backyard Swimming Pool
-        const pool = new THREE.Mesh(new THREE.BoxGeometry(4.5, 0.3, 3.0), waterMat);
-        pool.position.set(home.x + 0.5, 0.15, home.z - 7.5);
+        const pool = new THREE.Mesh(new THREE.BoxGeometry(5.0, 0.3, 3.4), waterMat);
+        pool.position.set(home.x + 0.6, 0.15, home.z - 8.2);
         group.add(pool);
 
         group.add(homeGroup);
       });
 
       // Driveway Cars
-      addDetailedVehicle(-22, -9, 0, 0xef4444);
-      addDetailedVehicle(8, -9, 0, 0x3b82f6);
-      addDetailedVehicle(-8, 9, Math.PI, 0xffffff);
-      addDetailedVehicle(22, 9, Math.PI, 0x10b981);
-      addDetailedVehicle(0, 0, 1.57, 0xf59e0b);
+      addDetailedVehicle(-34, -10, 0, 0xef4444);
+      addDetailedVehicle(0, -10, 0, 0x3b82f6);
+      addDetailedVehicle(34, -10, 0, 0xffffff);
+      addDetailedVehicle(-18, 10, Math.PI, 0x10b981);
+      addDetailedVehicle(18, 10, Math.PI, 0xf59e0b);
+      addDetailedVehicle(0, 0, 1.57, 0x9333ea);
 
-      // Garden Hedges & Village Trees
-      for (let tx = -30; tx <= 30; tx += 8) {
-        addDetailedTree(tx, -25, 1.1);
-        addDetailedTree(tx, 25, 1.2);
-        addStreetlight(tx, -5, Math.PI / 2);
+      // Village Trees & Green Belts
+      for (let tx = -44; tx <= 44; tx += 8) {
+        addDetailedTree(tx, -30, 1.15);
+        addDetailedTree(tx, 30, 1.2);
+        addStreetlight(tx, -6, Math.PI / 2);
       }
     }
 
     // =========================================================================
-    // 4. TOPOLOGY: UTILITY SOLAR TRACKER MATRIX & SUBSTATION
+    // 4. UTILITY SOLAR TRACKER MATRIX & SUBSTATION (64 Tracker Arrays)
     // =========================================================================
     else {
-      // Gravel Access Roads
-      addRoad(0, 0, 8, 120, true);
-      addRoad(0, 0, 8, 90, false);
+      addRoad(0, 0, 9, 160, true);
+      addRoad(0, 0, 9, 120, false);
 
-      // 6x6 Ground Mounted Single-Axis Tracker Arrays
-      for (let x = -36; x <= 36; x += 12) {
-        if (Math.abs(x) < 4) continue;
-        for (let z = -32; z <= 32; z += 10) {
-          if (Math.abs(z) < 4) continue;
+      // 8x8 Tracker Matrix Grid
+      for (let x = -48; x <= 48; x += 13) {
+        if (Math.abs(x) < 5) continue;
+        for (let z = -42; z <= 42; z += 11) {
+          if (Math.abs(z) < 5) continue;
 
-          // Steel Foundation Torque Tube
           const tube = new THREE.Mesh(
-            new THREE.CylinderGeometry(0.12, 0.12, 6.2, 8),
+            new THREE.CylinderGeometry(0.12, 0.12, 7.2, 8),
             getBuildingMat(0x64748b, 0.3, 0.8)
           );
           tube.rotation.z = Math.PI / 2;
@@ -779,8 +774,7 @@ const SolarCanvas3D = forwardRef(({
           tube.castShadow = true;
           group.add(tube);
 
-          // Support Mounting Posts
-          [-2.4, 0, 2.4].forEach((px) => {
+          [-2.8, 0, 2.8].forEach((px) => {
             const leg = new THREE.Mesh(
               new THREE.CylinderGeometry(0.12, 0.15, 1.5, 8),
               getBuildingMat(0x94a3b8, 0.3, 0.8)
@@ -790,9 +784,8 @@ const SolarCanvas3D = forwardRef(({
             group.add(leg);
           });
 
-          // Large Utility PV Panel String
           const panel = new THREE.Mesh(
-            new THREE.BoxGeometry(6.4, 0.14, 4.2),
+            new THREE.BoxGeometry(7.2, 0.14, 4.6),
             getSolarPanelMat()
           );
           panel.position.set(x, 1.75, z);
@@ -804,43 +797,37 @@ const SolarCanvas3D = forwardRef(({
         }
       }
 
-      // Central Step-Up Transformer Substation (33kV / 132kV)
+      // Central High-Voltage Substation Complex
       const subGroup = new THREE.Group();
-      subGroup.position.set(0, 0, 36);
+      subGroup.position.set(0, 0, 48);
 
-      const subPad = new THREE.Mesh(new THREE.BoxGeometry(16, 0.4, 12), getBuildingMat(0x475569));
+      const subPad = new THREE.Mesh(new THREE.BoxGeometry(22, 0.4, 16), getBuildingMat(0x475569));
       subPad.position.y = 0.2;
       subGroup.add(subPad);
 
-      const transformer1 = new THREE.Mesh(new THREE.BoxGeometry(4, 3.8, 4), getBuildingMat(0x1e293b));
-      transformer1.position.set(-4, 2.1, 0);
-      transformer1.castShadow = true;
-      subGroup.add(transformer1);
+      [-6, 6].forEach((tx) => {
+        const transformer = new THREE.Mesh(new THREE.BoxGeometry(5, 4.5, 5), getBuildingMat(0x1e293b));
+        transformer.position.set(tx, 2.5, 0);
+        transformer.castShadow = true;
+        subGroup.add(transformer);
+      });
 
-      const transformer2 = new THREE.Mesh(new THREE.BoxGeometry(4, 3.8, 4), getBuildingMat(0x1e293b));
-      transformer2.position.set(4, 2.1, 0);
-      transformer2.castShadow = true;
-      subGroup.add(transformer2);
-
-      // High-Voltage Gantry Tower
-      const gantry = new THREE.Mesh(new THREE.BoxGeometry(12, 7, 1), getBuildingMat(0x94a3b8, 0.3, 0.8));
-      gantry.position.set(0, 3.8, -3.5);
+      const gantry = new THREE.Mesh(new THREE.BoxGeometry(18, 9, 1.2), getBuildingMat(0x94a3b8, 0.3, 0.8));
+      gantry.position.set(0, 4.5, -4.5);
       gantry.castShadow = true;
       subGroup.add(gantry);
 
-      // Weather Monitoring Station & Anemometer Mast
-      const mast = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.15, 12, 8), getBuildingMat(0xffffff));
-      mast.position.set(-18, 6, 36);
+      const mast = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.18, 14, 8), getBuildingMat(0xffffff));
+      mast.position.set(-24, 7, 48);
       mast.castShadow = true;
       group.add(mast);
 
-      const anemometer = new THREE.Mesh(new THREE.SphereGeometry(0.4, 8, 8), new THREE.MeshBasicMaterial({ color: 0xef4444 }));
-      anemometer.position.set(-18, 12.2, 36);
+      const anemometer = new THREE.Mesh(new THREE.SphereGeometry(0.5, 8, 8), new THREE.MeshBasicMaterial({ color: 0xef4444 }));
+      anemometer.position.set(-24, 14.2, 48);
       group.add(anemometer);
 
-      // Utility Maintenance Trucks
-      addDetailedVehicle(-5, 0, 1.57, 0xf59e0b);
-      addDetailedVehicle(5, 0, 1.57, 0xffffff);
+      addDetailedVehicle(-8, 0, 1.57, 0xf59e0b);
+      addDetailedVehicle(8, 0, 1.57, 0xffffff);
 
       group.add(subGroup);
     }
@@ -865,7 +852,6 @@ const SolarCanvas3D = forwardRef(({
     <div style={{ position: "relative", width: "100%", height: "100%" }}>
       <div ref={mountRef} style={{ width: "100%", height: "100%", cursor: "grab" }} />
 
-      {/* Viewport Control Hints */}
       <div style={{
         position: "absolute",
         bottom: "16px",

@@ -3,7 +3,7 @@ import PhotorealisticHeroMedia from '../media/PhotorealisticHeroMedia';
 import ModeToggle from '../ui/ModeToggle';
 import { Box, ArrowRight, Zap } from 'lucide-react';
 
-export default function HeroSection({ onLaunchStudio, onOpenQuote }) {
+export default function HeroSection({ onLaunchStudio }) {
   const [mode, setMode] = useState('morning');
 
   return (
@@ -24,7 +24,7 @@ export default function HeroSection({ onLaunchStudio, onOpenQuote }) {
         style={{
           position: 'absolute',
           inset: 0,
-          background: 'linear-gradient(180deg, rgba(9, 13, 22, 0.35) 0%, rgba(9, 13, 22, 0.1) 40%, rgba(9, 13, 22, 0.65) 100%)',
+          background: 'linear-gradient(180deg, rgba(9, 13, 22, 0.45) 0%, rgba(9, 13, 22, 0.15) 45%, rgba(9, 13, 22, 0.75) 100%)',
           zIndex: 5,
           pointerEvents: 'none'
         }}
@@ -63,11 +63,11 @@ export default function HeroSection({ onLaunchStudio, onOpenQuote }) {
               gap: '8px',
               padding: '6px 16px',
               borderRadius: '9999px',
-              background: 'rgba(9, 13, 22, 0.75)',
-              border: '1px solid rgba(245, 158, 11, 0.35)',
+              background: 'rgba(9, 13, 22, 0.8)',
+              border: '1px solid rgba(245, 158, 11, 0.4)',
               backdropFilter: 'blur(16px)',
               marginBottom: '16px',
-              boxShadow: '0 4px 20px rgba(0, 0, 0, 0.5)'
+              boxShadow: '0 4px 20px rgba(0, 0, 0, 0.6)'
             }}
           >
             <Zap size={14} color="#f59e0b" />
@@ -90,27 +90,27 @@ export default function HeroSection({ onLaunchStudio, onOpenQuote }) {
             style={{
               fontSize: 'clamp(2.4rem, 5.2vw, 4.4rem)',
               fontWeight: 800,
-              lineHeight: 1.1,
+              lineHeight: 1.12,
               letterSpacing: '-0.03em',
               color: '#ffffff',
               marginBottom: '16px',
-              textShadow: '0 4px 20px rgba(0, 0, 0, 0.9)'
+              textShadow: '0 4px 25px rgba(0, 0, 0, 0.95), 0 2px 5px rgba(0,0,0,0.8)'
             }}
           >
             Precision 3D Solar Potential &amp; <br />
             <span
               style={{
-                background: 'linear-gradient(135deg, #f59e0b 0%, #fef08a 50%, #ea580c 100%)',
+                background: 'linear-gradient(135deg, #f59e0b 0%, #fef08a 40%, #fb923c 100%)',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
-                filter: 'drop-shadow(0 4px 20px rgba(245, 158, 11, 0.4))'
+                filter: 'drop-shadow(0 4px 25px rgba(245, 158, 11, 0.5))'
               }}
             >
               Rooftop Intelligence
             </span>
           </h1>
 
-          {/* Pure clean text line with ONLY subtle text shadow (NO box/capsule) */}
+          {/* Clean Subtitle Line with subtle text-shadow */}
           <p
             style={{
               fontSize: 'clamp(0.95rem, 1.25vw, 1.15rem)',
@@ -119,13 +119,13 @@ export default function HeroSection({ onLaunchStudio, onOpenQuote }) {
               maxWidth: '780px',
               margin: '0 auto 28px',
               fontWeight: 500,
-              textShadow: '0 2px 10px rgba(0, 0, 0, 0.85), 0 1px 3px rgba(0, 0, 0, 0.9)'
+              textShadow: '0 2px 12px rgba(0, 0, 0, 0.95), 0 1px 4px rgba(0, 0, 0, 0.9)'
             }}
           >
             Eliminate 25–40% shading errors with sub-degree LOD2 CityGML facet extraction, real-time WebGL shadow occlusion, and bankable PVLib solar yield forecasting.
           </p>
 
-          {/* Primary Action Buttons */}
+          {/* Dual Action Buttons: Launch 3D Studio on the Left, Explore Pipeline on the Right */}
           <div
             style={{
               display: 'flex',
@@ -137,29 +137,52 @@ export default function HeroSection({ onLaunchStudio, onOpenQuote }) {
             }}
           >
             <button
-    onClick={() => {
-      const el = document.getElementById('how-it-works');
-      if (el) el.scrollIntoView({ behavior: 'smooth' });
-    }}
-    style={{
-      display: 'flex',
-      alignItems: 'center',
-      gap: '8px',
-      padding: '13px 26px',
-      borderRadius: '9999px',
-      background: 'rgba(9, 13, 22, 0.75)',
-      border: '1px solid rgba(255, 255, 255, 0.2)',
-      backdropFilter: 'blur(16px)',
-      color: '#ffffff',
-      fontWeight: 700,
-      fontSize: '0.95rem',
-      cursor: 'pointer',
-      boxShadow: '0 4px 20px rgba(0,0,0,0.4)',
-      transition: 'all 0.2s'
-    }}
-  >
-    <span>Explore Pipeline</span>
-  </button>
+              onClick={() => onLaunchStudio('commercial')}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                padding: '13px 30px',
+                borderRadius: '9999px',
+                background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+                color: '#ffffff',
+                border: 'none',
+                fontWeight: 700,
+                fontSize: '0.95rem',
+                cursor: 'pointer',
+                boxShadow: '0 4px 25px rgba(245, 158, 11, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.3)',
+                transition: 'all 0.2s'
+              }}
+            >
+              <Box size={18} />
+              <span>Launch 3D Studio</span>
+              <ArrowRight size={16} />
+            </button>
+
+            <button
+              onClick={() => {
+                const el = document.getElementById('how-it-works');
+                if (el) el.scrollIntoView({ behavior: 'smooth' });
+              }}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                padding: '13px 26px',
+                borderRadius: '9999px',
+                background: 'rgba(9, 13, 22, 0.75)',
+                border: '1px solid rgba(255, 255, 255, 0.25)',
+                backdropFilter: 'blur(16px)',
+                color: '#ffffff',
+                fontWeight: 700,
+                fontSize: '0.95rem',
+                cursor: 'pointer',
+                boxShadow: '0 4px 20px rgba(0,0,0,0.5)',
+                transition: 'all 0.2s'
+              }}
+            >
+              <span>Explore Pipeline</span>
+            </button>
           </div>
         </div>
 

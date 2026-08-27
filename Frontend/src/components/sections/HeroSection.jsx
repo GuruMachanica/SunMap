@@ -192,7 +192,7 @@ export default function HeroSection({ onLaunchStudio, onOpenQuote }) {
             pointerEvents: 'auto'
           }}
         >
-          <ModeToggle mode={mode} onModeChange={setMode} />
+          <ModeToggle mode={mode} onToggle={setMode} onModeChange={setMode} />
         </div>
       </div>
     </section>

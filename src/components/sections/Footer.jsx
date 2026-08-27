@@ -3,7 +3,7 @@ import { Sun, ShieldCheck, Github, Award, CheckCircle } from 'lucide-react';
 
 export default function Footer() {
   return (
-    <footer style={{ borderTop: '1px solid rgba(255, 255, 255, 0.08)', padding: '60px 0 30px', background: '#060911' }}>
+    <footer style={{ borderTop: '1px solid rgba(255, 255, 255, 0.08)', padding: '50px 0 28px', background: '#060911' }}>
       <div className="container" style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 24px' }}>
         {/* Accolades Strip */}
         <div
@@ -13,8 +13,8 @@ export default function Footer() {
             justifyContent: 'space-between',
             alignItems: 'center',
             gap: '16px',
-            paddingBottom: '32px',
-            marginBottom: '36px',
+            paddingBottom: '28px',
+            marginBottom: '32px',
             borderBottom: '1px solid rgba(255, 255, 255, 0.06)'
           }}
         >
@@ -29,11 +29,11 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* 4-Column Structured Layout */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '40px', marginBottom: '40px' }}>
-          {/* Col 1: Brand & Team Info */}
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '14px' }}>
+        {/* Streamlined 2-Column Layout */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '30px', marginBottom: '32px' }}>
+          {/* Brand & Description */}
+          <div style={{ maxWidth: '640px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
               <div
                 style={{
                   width: '34px',
@@ -52,54 +52,49 @@ export default function Footer() {
                 sunmap<span style={{ color: '#f59e0b' }}>.</span>
               </span>
             </div>
-            <p style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)', lineHeight: 1.6, marginBottom: '18px' }}>
+            <p style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)', lineHeight: 1.6, margin: 0 }}>
               Intelligent 3D spatial solar irradiance modeling, LOD2 CityGML rooftop normal extraction, and ray-traced shadow occlusion engine developed for urban photovoltaic assessment.
             </p>
-            <div style={{ display: 'flex', gap: '12px', color: 'var(--color-text-muted)' }}>
-              <a href="https://github.com/GuruMachanica/SunMap" target="_blank" rel="noreferrer" style={socialIconStyle}><Github size={18} /></a>
-            </div>
           </div>
 
-          {/* Col 2: Engineering Team */}
-          <div>
-            <h4 style={{ color: '#fff', fontSize: '0.95rem', marginBottom: '14px' }}>Team Ironlogic</h4>
-            <ul style={listStyle}>
-              <li style={{ color: '#94a3b8', fontSize: '0.85rem' }}>Mohammad Huzaifa (Lead Architecture)</li>
-              <li style={{ color: '#94a3b8', fontSize: '0.85rem' }}>Mohnish Narayan Gupta</li>
-              <li style={{ color: '#94a3b8', fontSize: '0.85rem' }}>Isnia Izhar</li>
-              <li style={{ color: '#94a3b8', fontSize: '0.85rem' }}>Ashutosh Mishra</li>
-            </ul>
-          </div>
+          {/* Social & Engine Status Badge */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '18px', flexWrap: 'wrap' }}>
+            <a
+              href="https://github.com/GuruMachanica/SunMap"
+              target="_blank"
+              rel="noreferrer"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                padding: '8px 16px',
+                borderRadius: '12px',
+                background: 'rgba(255, 255, 255, 0.04)',
+                border: '1px solid rgba(255, 255, 255, 0.1)',
+                color: '#f8fafc',
+                textDecoration: 'none',
+                fontSize: '0.82rem',
+                fontWeight: 600,
+                transition: 'all 0.2s ease'
+              }}
+            >
+              <Github size={16} />
+              <span>Source Repository</span>
+            </a>
 
-          {/* Col 3: Technical Specifications */}
-          <div>
-            <h4 style={{ color: '#fff', fontSize: '0.95rem', marginBottom: '14px' }}>Architecture</h4>
-            <ul style={listStyle}>
-              <li><a href="#how-it-works" style={linkStyle}>3D Facet Raycasting Pipeline</a></li>
-              <li><a href="#tech" style={linkStyle}>Smart Controller Architecture</a></li>
-              <li><a href="#calculator" style={linkStyle}>Diurnal Yield Modeling</a></li>
-              <li><a href="#cases" style={linkStyle}>Validation Case Studies</a></li>
-            </ul>
-          </div>
-
-          {/* Col 4: Platform Engine Status */}
-          <div>
-            <h4 style={{ color: '#fff', fontSize: '0.95rem', marginBottom: '14px' }}>Engine Status</h4>
             <div
               style={{
                 background: 'rgba(255, 255, 255, 0.03)',
-                padding: '16px',
-                borderRadius: '14px',
-                border: '1px solid rgba(255, 255, 255, 0.06)'
+                padding: '10px 18px',
+                borderRadius: '12px',
+                border: '1px solid rgba(255, 255, 255, 0.06)',
+                fontFamily: 'monospace'
               }}
             >
-              <div style={{ fontWeight: 700, color: '#10b981', fontSize: '0.88rem', marginBottom: '4px' }}>
-                WebGL 60 FPS Ray-Tracing Active
+              <div style={{ fontWeight: 700, color: '#10b981', fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#10b981', display: 'inline-block' }} />
+                <span>WebGL 60 FPS Active</span>
               </div>
-              <p style={{ fontSize: '0.78rem', color: 'var(--color-text-muted)', lineHeight: 1.5, margin: 0 }}>
-                Developed for CodeStorm’25<br />
-                Licensed to Team Ironlogic
-              </p>
             </div>
           </div>
         </div>
@@ -109,7 +104,7 @@ export default function Footer() {
           <div style={{ fontSize: '0.78rem', color: 'var(--color-text-muted)' }}>
             © {new Date().getFullYear()} SunMap • Team Ironlogic. All rights reserved. Proprietary - Strict Private Use &amp; Inspection License.
           </div>
-          <div style={{ fontSize: '0.78rem', color: '#64748b' }}>
+          <div style={{ fontSize: '0.78rem', color: '#64748b', fontFamily: 'monospace' }}>
             Inquiries: ironlogic@zohomail.in
           </div>
         </div>
@@ -117,24 +112,3 @@ export default function Footer() {
     </footer>
   );
 }
-
-const listStyle = {
-  listStyle: 'none',
-  padding: 0,
-  margin: 0,
-  display: 'flex',
-  flexDirection: 'column',
-  gap: '8px'
-};
-
-const linkStyle = {
-  color: '#94a3b8',
-  textDecoration: 'none',
-  fontSize: '0.85rem',
-  transition: 'color 0.2s ease'
-};
-
-const socialIconStyle = {
-  color: '#94a3b8',
-  transition: 'color 0.2s ease'
-};

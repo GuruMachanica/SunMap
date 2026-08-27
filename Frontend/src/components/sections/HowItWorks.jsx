@@ -1,115 +1,117 @@
 import React from 'react';
-import { Layers, Cpu, ShieldCheck, ArrowRight, Sparkles } from 'lucide-react';
+import { Layers, Box, Sun, FileCheck, ArrowRight } from 'lucide-react';
 
 export default function HowItWorks() {
   const steps = [
     {
-      number: '01',
-      icon: <Layers size={28} style={{ color: '#f59e0b' }} />,
-      title: 'Smart Hardware Installation',
-      description: 'High-efficiency solar array + Smart Controller battery storage setup installed seamlessly on your home with zero upfront disruption.'
+      num: '01',
+      icon: Layers,
+      title: 'LOD2 Geometry Extraction',
+      description: 'Parses 3D CityGML polygon boundaries, surface normals [nx, ny, nz], rooftop area, and pitch angles with sub-degree vector accuracy.'
     },
     {
-      number: '02',
-      icon: <Cpu size={28} style={{ color: '#38bdf8' }} />,
-      title: 'AI Power Arbitrage',
-      description: 'The system buys low, stores energy, powers your home, and trades excess power back to the grid automatically using real-time market data.'
+      num: '02',
+      icon: Box,
+      title: 'Ray-Traced Shadow Occlusion',
+      description: 'Calculates real-time solar ray obstruction from adjacent skyscrapers, trees, and rooftop HVAC units across all 8,760 hourly celestial vectors.'
     },
     {
-      number: '03',
-      icon: <ShieldCheck size={28} style={{ color: '#10b981' }} />,
-      title: 'Fixed Zero-Bill Guarantee',
-      description: 'Enjoy 7 years of guaranteed $0 electricity bills. Unexpected seasonal dips, winter clouds, or utility rate spikes are 100% covered.'
+      num: '03',
+      icon: Sun,
+      title: 'Perez Irradiance Transposition',
+      description: 'Splits direct normal (DNI), diffuse (DHI), and ground albedo flux on each tilted PV facet using NREL-benchmarked transposition physics.'
+    },
+    {
+      num: '04',
+      icon: FileCheck,
+      title: 'Bankable Yield & ROI Audit',
+      description: 'Computes annual clean kWh generation, 25-year financial cash flow, utility tariff offsets, and carbon abatement metrics.'
     }
   ];
 
   return (
-    <section id="how-it-works" style={{ position: 'relative', padding: '110px 0' }}>
-      <div className="container">
-        {/* Section Header */}
-        <div style={{ textAlign: 'center', maxWidth: '680px', margin: '0 auto 60px' }}>
-          <div
-            className="glass-pill"
+    <section id="how-it-works" style={{ padding: '90px 0', background: '#090d16' }}>
+      <div className="container" style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 24px' }}>
+        <div style={{ textAlign: 'center', maxWidth: '720px', margin: '0 auto 60px' }}>
+          <span
             style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '8px',
-              padding: '6px 18px',
-              marginBottom: '14px',
+              fontSize: '0.75rem',
+              fontFamily: 'monospace',
               color: '#f59e0b',
-              fontSize: '0.85rem',
-              fontWeight: 600
+              fontWeight: 700,
+              letterSpacing: '0.12em',
+              textTransform: 'uppercase'
             }}
           >
-            <Sparkles size={16} />
-            <span>Seamless Process</span>
-          </div>
-          <h2 style={{ fontSize: 'clamp(2rem, 3.5vw, 3rem)', color: '#fff', marginBottom: '16px' }}>
-            How the 7-Year <span className="gradient-text-gold">Zero-Bill</span> Works
+            Spatial Simulation Pipeline
+          </span>
+          <h2
+            style={{
+              fontSize: 'clamp(2rem, 3.5vw, 2.8rem)',
+              fontWeight: 800,
+              color: '#ffffff',
+              margin: '8px 0 16px'
+            }}
+          >
+            How the 3D Solar Engine Works
           </h2>
-          <p style={{ color: 'var(--color-text-secondary)', fontSize: '1.05rem' }}>
-            We pair high-efficiency solar and storage hardware with an autonomous AI power trading platform.
+          <p style={{ fontSize: '0.95rem', color: '#94a3b8', lineHeight: 1.6 }}>
+            A four-stage computational spatial pipeline converting raw GIS building models into high-precision solar yield forecasts.
           </p>
         </div>
 
-        {/* 3-Step Flow Cards */}
         <div
           style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-            gap: '28px'
+            gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
+            gap: '24px'
           }}
         >
-          {steps.map((step, idx) => (
-            <div
-              key={idx}
-              className="glass-panel"
-              style={{
-                padding: '36px 30px',
-                borderRadius: '24px',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'space-between',
-                position: 'relative'
-              }}
-            >
-              <div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+          {steps.map((s, idx) => {
+            const Icon = s.icon;
+            return (
+              <div
+                key={idx}
+                style={{
+                  background: 'rgba(15, 23, 42, 0.65)',
+                  backdropFilter: 'blur(16px)',
+                  border: '1px solid rgba(255, 255, 255, 0.08)',
+                  borderRadius: '20px',
+                  padding: '30px 24px',
+                  position: 'relative',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '16px'
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <div
                     style={{
-                      width: '56px',
-                      height: '56px',
-                      borderRadius: '16px',
-                      background: 'rgba(255, 255, 255, 0.04)',
-                      border: '1px solid rgba(255, 255, 255, 0.1)',
+                      width: '44px',
+                      height: '44px',
+                      borderRadius: '12px',
+                      background: 'rgba(245, 158, 11, 0.12)',
+                      border: '1px solid rgba(245, 158, 11, 0.3)',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center'
                     }}
                   >
-                    {step.icon}
+                    <Icon size={22} color="#f59e0b" />
                   </div>
-                  <span
-                    style={{
-                      fontSize: '2rem',
-                      fontWeight: 800,
-                      color: 'rgba(255, 255, 255, 0.12)',
-                      fontFamily: 'var(--font-heading)'
-                    }}
-                  >
-                    {step.number}
+                  <span style={{ fontSize: '1.4rem', fontWeight: 800, color: 'rgba(255, 255, 255, 0.15)', fontFamily: 'monospace' }}>
+                    {s.num}
                   </span>
                 </div>
-
-                <h3 style={{ fontSize: '1.3rem', color: '#ffffff', marginBottom: '14px' }}>
-                  {step.title}
+                <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: '#ffffff' }}>
+                  {s.title}
                 </h3>
-                <p style={{ fontSize: '0.92rem', color: 'var(--color-text-secondary)', lineHeight: 1.65 }}>
-                  {step.description}
+                <p style={{ fontSize: '0.85rem', color: '#94a3b8', lineHeight: 1.6, margin: 0 }}>
+                  {s.description}
                 </p>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </section>

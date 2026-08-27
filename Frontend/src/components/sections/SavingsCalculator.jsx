@@ -1,236 +1,161 @@
 import React, { useState } from 'react';
-import { DollarSign, Zap, TreePine, Award, ArrowRight, ShieldCheck, Sparkles, MapPin, Home } from 'lucide-react';
-import Button from '../ui/Button';
-import confetti from 'canvas-confetti';
+import { Zap, DollarSign, Leaf, Sliders, ArrowRight } from 'lucide-react';
 
 export default function SavingsCalculator({ onOpenQuote }) {
-  const [monthlyBill, setMonthlyBill] = useState(280);
-  const [postcode, setPostcode] = useState('2000');
-  const [homeSize, setHomeSize] = useState('3-4 Bedrooms');
+  const [roofArea, setRoofArea] = useState(180); // m2
+  const [tariffRate, setTariffRate] = useState(0.16); // $/kWh
+  const [solarGhi, setSolarGhi] = useState(1450); // kWh/m2/yr
 
-  // 7-Year Total Savings Calculation based on monthly power bill
-  const sevenYearSavings = Math.round(monthlyBill * 12 * 7 * 0.95);
-  const co2Tons = (monthlyBill * 0.024 * 7).toFixed(1);
-  const treesPlanted = Math.round(co2Tons * 45);
-  const batteryCapacity = monthlyBill > 400 ? '27.0 kWh (Dual Powerwall)' : '13.5 kWh Powerwall';
-
-  const handleLockIn = () => {
-    confetti({
-      particleCount: 90,
-      spread: 65,
-      origin: { y: 0.6 },
-      colors: ['#f59e0b', '#38bdf8', '#10b981', '#ffffff']
-    });
-    if (onOpenQuote) {
-      onOpenQuote({
-        monthlyBill,
-        postcode,
-        homeSize,
-        sevenYearSavings,
-        batteryCapacity
-      });
-    }
-  };
+  // Physics Calculations
+  const systemKwp = (roofArea * 0.20 * 0.75).toFixed(1); // 200W/m2 packing density
+  const annualKwh = Math.round(roofArea * solarGhi * 0.21 * 0.82); // 21% module eff, 82% PR
+  const annualSavings = Math.round(annualKwh * tariffRate);
+  const twentyFiveYearSavings = annualSavings * 25;
+  const co2Offset = ((annualKwh * 0.85) / 2204.62).toFixed(1);
 
   return (
-    <section id="calculator" style={{ position: 'relative', padding: '110px 0', background: 'rgba(15, 23, 42, 0.6)' }}>
-      <div className="container">
-        {/* Section Header */}
-        <div style={{ textAlign: 'center', maxWidth: '700px', margin: '0 auto 60px' }}>
-          <div
-            className="glass-pill"
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '8px',
-              padding: '6px 18px',
-              marginBottom: '14px',
-              color: '#38bdf8',
-              fontSize: '0.85rem',
-              fontWeight: 600
-            }}
-          >
-            <Sparkles size={16} />
-            <span>Interactive Savings Calculator</span>
-          </div>
-          <h2 style={{ fontSize: 'clamp(2rem, 3.5vw, 3rem)', color: '#fff', marginBottom: '16px' }}>
-            Calculate Your 7-Year <span className="gradient-text-gold">$0 Bill Savings</span>
+    <section id="calculator" style={{ padding: '90px 0', background: '#0c111d' }}>
+      <div className="container" style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 24px' }}>
+        <div style={{ textAlign: 'center', maxWidth: '720px', margin: '0 auto 60px' }}>
+          <span style={{ fontSize: '0.75rem', fontFamily: 'monospace', color: '#f59e0b', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase' }}>
+            Interactive Physics &amp; Financial Modeler
+          </span>
+          <h2 style={{ fontSize: 'clamp(2rem, 3.5vw, 2.8rem)', fontWeight: 800, color: '#ffffff', margin: '8px 0 16px' }}>
+            Solar Potential &amp; Revenue Estimator
           </h2>
-          <p style={{ color: 'var(--color-text-secondary)', fontSize: '1.05rem' }}>
-            Move the slider to see how much you will save under our guaranteed 7-year zero electricity bill plan.
+          <p style={{ fontSize: '0.95rem', color: '#94a3b8', lineHeight: 1.6 }}>
+            Adjust your usable rooftop area, local solar insolation flux, and electricity tariff rate to simulate bankable generation and ROI.
           </p>
         </div>
 
-        {/* Calculator Grid */}
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-            gap: '32px',
-            alignItems: 'center'
-          }}
-        >
-          {/* Inputs Column */}
-          <div className="glass-panel" style={{ padding: '36px', borderRadius: '24px' }}>
-            <h3 style={{ fontSize: '1.35rem', color: '#fff', marginBottom: '28px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <Zap size={22} style={{ color: '#f59e0b' }} />
-              <span>Your Home Profile</span>
-            </h3>
-
-            {/* Slider: Average Monthly Power Bill */}
-            <div style={{ marginBottom: '30px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-                <label style={{ fontSize: '0.95rem', color: '#cbd5e1', fontWeight: 600 }}>
-                  Average Monthly Power Bill
-                </label>
-                <span style={{ fontSize: '1.4rem', fontWeight: 800, color: '#fbbf24' }}>
-                  ${monthlyBill} <span style={{ fontSize: '0.8rem', fontWeight: 500, color: '#94a3b8' }}>/ mo</span>
-                </span>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '30px', alignItems: 'center' }}>
+          {/* Left Controls Card */}
+          <div
+            style={{
+              background: 'rgba(15, 23, 42, 0.75)',
+              backdropFilter: 'blur(20px)',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+              borderRadius: '24px',
+              padding: '36px',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '24px'
+            }}
+          >
+            {/* Slider 1: Rooftop Area */}
+            <div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px', fontFamily: 'monospace' }}>
+                <span style={{ color: '#94a3b8', fontSize: '0.85rem' }}>USABLE ROOF AREA</span>
+                <strong style={{ color: '#f59e0b', fontSize: '1.1rem' }}>{roofArea} m²</strong>
               </div>
               <input
                 type="range"
-                min="150"
-                max="800"
+                min="40"
+                max="1200"
                 step="10"
-                value={monthlyBill}
-                onChange={(e) => setMonthlyBill(Number(e.target.value))}
+                value={roofArea}
+                onChange={(e) => setRoofArea(parseInt(e.target.value))}
+                style={{ width: '100%', accentColor: '#f59e0b', cursor: 'pointer' }}
               />
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', color: '#64748b', marginTop: '6px' }}>
-                <span>$150 / mo</span>
-                <span>$450 / mo</span>
-                <span>$800 / mo</span>
-              </div>
             </div>
 
-            {/* Dual Inputs: Postcode & Home Size */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '24px' }}>
-              <div>
-                <label style={{ display: 'block', fontSize: '0.8rem', color: '#cbd5e1', marginBottom: '6px', fontWeight: 600 }}>
-                  Postcode / City
-                </label>
-                <div style={{ position: 'relative' }}>
-                  <input
-                    type="text"
-                    value={postcode}
-                    onChange={(e) => setPostcode(e.target.value)}
-                    style={{
-                      width: '100%',
-                      padding: '10px 12px 10px 32px',
-                      background: 'rgba(255, 255, 255, 0.05)',
-                      border: '1px solid rgba(255, 255, 255, 0.1)',
-                      borderRadius: '10px',
-                      color: '#fff',
-                      fontSize: '0.9rem',
-                      outline: 'none'
-                    }}
-                  />
-                  <MapPin size={16} style={{ position: 'absolute', left: '10px', top: '12px', color: '#94a3b8' }} />
-                </div>
+            {/* Slider 2: Annual Solar GHI */}
+            <div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px', fontFamily: 'monospace' }}>
+                <span style={{ color: '#94a3b8', fontSize: '0.85rem' }}>SOLAR FLUX (GHI)</span>
+                <strong style={{ color: '#38bdf8', fontSize: '1.1rem' }}>{solarGhi} kWh/m²/yr</strong>
               </div>
-
-              <div>
-                <label style={{ display: 'block', fontSize: '0.8rem', color: '#cbd5e1', marginBottom: '6px', fontWeight: 600 }}>
-                  Home Size
-                </label>
-                <select
-                  value={homeSize}
-                  onChange={(e) => setHomeSize(e.target.value)}
-                  style={{
-                    width: '100%',
-                    padding: '10px 12px',
-                    background: '#0f172a',
-                    border: '1px solid rgba(255, 255, 255, 0.1)',
-                    borderRadius: '10px',
-                    color: '#fff',
-                    fontSize: '0.9rem',
-                    outline: 'none',
-                    cursor: 'pointer'
-                  }}
-                >
-                  <option value="1-2 Bedrooms">1-2 Bedrooms</option>
-                  <option value="3-4 Bedrooms">3-4 Bedrooms</option>
-                  <option value="5+ Bedrooms">5+ Large Estate</option>
-                </select>
-              </div>
+              <input
+                type="range"
+                min="900"
+                max="2400"
+                step="50"
+                value={solarGhi}
+                onChange={(e) => setSolarGhi(parseInt(e.target.value))}
+                style={{ width: '100%', accentColor: '#38bdf8', cursor: 'pointer' }}
+              />
             </div>
 
-            {/* Smart Hardware Summary */}
-            <div
-              style={{
-                background: 'rgba(255, 255, 255, 0.03)',
-                padding: '14px 18px',
-                borderRadius: '12px',
-                border: '1px solid rgba(255, 255, 255, 0.06)',
-                fontSize: '0.85rem',
-                color: '#cbd5e1'
-              }}
-            >
-              <div style={{ color: '#94a3b8', fontSize: '0.75rem', marginBottom: '2px' }}>Included Storage Setup</div>
-              <div style={{ fontWeight: 700, color: '#38bdf8' }}>{batteryCapacity} + Smart Controller</div>
+            {/* Slider 3: Utility Tariff Rate */}
+            <div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px', fontFamily: 'monospace' }}>
+                <span style={{ color: '#94a3b8', fontSize: '0.85rem' }}>UTILITY TARIFF RATE</span>
+                <strong style={{ color: '#10b981', fontSize: '1.1rem' }}>${tariffRate.toFixed(2)} /kWh</strong>
+              </div>
+              <input
+                type="range"
+                min="0.08"
+                max="0.45"
+                step="0.01"
+                value={tariffRate}
+                onChange={(e) => setTariffRate(parseFloat(e.target.value))}
+                style={{ width: '100%', accentColor: '#10b981', cursor: 'pointer' }}
+              />
             </div>
           </div>
 
-          {/* Results Output Column */}
+          {/* Right Metrics Output Card */}
           <div
-            className="glass-panel"
             style={{
-              padding: '38px',
+              background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(15, 23, 42, 0.9) 100%)',
+              border: '1px solid rgba(245, 158, 11, 0.3)',
               borderRadius: '24px',
-              background: 'linear-gradient(135deg, rgba(15, 23, 42, 0.92) 0%, rgba(30, 41, 59, 0.85) 100%)',
-              border: '1px solid rgba(245, 158, 11, 0.35)',
-              boxShadow: '0 25px 60px rgba(0, 0, 0, 0.5), 0 0 35px rgba(245, 158, 11, 0.15)'
+              padding: '36px',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '20px'
             }}
           >
-            <div style={{ fontSize: '0.85rem', color: '#f59e0b', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '6px' }}>
-              Guaranteed 7-Year Total Savings
+            <div style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.08)', paddingBottom: '16px' }}>
+              <span style={{ fontSize: '0.72rem', color: '#f59e0b', fontFamily: 'monospace', fontWeight: 700 }}>
+                ESTIMATED ANNUAL SOLAR REVENUE
+              </span>
+              <div style={{ fontSize: '2.4rem', fontWeight: 800, color: '#ffffff', fontFamily: 'monospace', margin: '4px 0' }}>
+                ${annualSavings.toLocaleString()} <span style={{ fontSize: '1rem', color: '#94a3b8' }}>/year</span>
+              </div>
+              <span style={{ fontSize: '0.8rem', color: '#10b981', fontWeight: 600 }}>
+                25-Year Cumulative Savings: ${twentyFiveYearSavings.toLocaleString()}
+              </span>
             </div>
 
-            {/* Big 7-Year Savings Number */}
-            <div style={{ fontSize: 'clamp(2.8rem, 4.5vw, 3.8rem)', fontWeight: 800, color: '#10b981', lineHeight: 1, marginBottom: '6px' }}>
-              ${sevenYearSavings.toLocaleString()}
-            </div>
-            <div style={{ fontSize: '0.9rem', color: '#94a3b8', marginBottom: '28px' }}>
-              Zero power bills, zero grid price rises, 100% price certainty.
-            </div>
-
-            {/* Environmental Metric Badges */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '28px' }}>
-              <div style={{ background: 'rgba(255, 255, 255, 0.04)', padding: '14px 18px', borderRadius: '14px', border: '1px solid rgba(255, 255, 255, 0.06)' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#10b981', fontSize: '0.8rem', fontWeight: 600, marginBottom: '4px' }}>
-                  <TreePine size={16} />
-                  <span>Carbon Offset</span>
-                </div>
-                <div style={{ fontSize: '1.35rem', fontWeight: 800, color: '#fff' }}>
-                  {co2Tons} <span style={{ fontSize: '0.8rem', color: '#94a3b8', fontWeight: 500 }}>Tons CO₂</span>
-                </div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px', fontFamily: 'monospace' }}>
+              <div style={{ background: 'rgba(255, 255, 255, 0.03)', padding: '14px', borderRadius: '14px', border: '1px solid rgba(255, 255, 255, 0.06)' }}>
+                <span style={{ fontSize: '0.7rem', color: '#94a3b8', display: 'block' }}>SYSTEM CAPACITY</span>
+                <strong style={{ fontSize: '1.25rem', color: '#ffffff' }}>{systemKwp} kWp</strong>
               </div>
 
-              <div style={{ background: 'rgba(255, 255, 255, 0.04)', padding: '14px 18px', borderRadius: '14px', border: '1px solid rgba(255, 255, 255, 0.06)' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#38bdf8', fontSize: '0.8rem', fontWeight: 600, marginBottom: '4px' }}>
-                  <Award size={16} />
-                  <span>Trees Equivalent</span>
-                </div>
-                <div style={{ fontSize: '1.35rem', fontWeight: 800, color: '#fff' }}>
-                  {treesPlanted.toLocaleString()} <span style={{ fontSize: '0.8rem', color: '#94a3b8', fontWeight: 500 }}>Trees</span>
-                </div>
+              <div style={{ background: 'rgba(255, 255, 255, 0.03)', padding: '14px', borderRadius: '14px', border: '1px solid rgba(255, 255, 255, 0.06)' }}>
+                <span style={{ fontSize: '0.7rem', color: '#94a3b8', display: 'block' }}>ANNUAL CLEAN ENERGY</span>
+                <strong style={{ fontSize: '1.25rem', color: '#10b981' }}>{annualKwh.toLocaleString()} kWh</strong>
+              </div>
+
+              <div style={{ background: 'rgba(255, 255, 255, 0.03)', padding: '14px', borderRadius: '14px', border: '1px solid rgba(255, 255, 255, 0.06)', gridColumn: '1 / -1' }}>
+                <span style={{ fontSize: '0.7rem', color: '#94a3b8', display: 'block' }}>CARBON ABATEMENT</span>
+                <strong style={{ fontSize: '1.25rem', color: '#38bdf8' }}>{co2Offset} Metric Tons CO₂ /year</strong>
               </div>
             </div>
 
-            {/* CTA Button */}
-            <Button
-              variant="glow"
-              size="lg"
-              fullWidth
-              onClick={handleLockIn}
-              icon={ArrowRight}
+            <button
+              onClick={() => onOpenQuote({ roofArea, annualSavings, systemKwp })}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px',
+                padding: '14px',
+                borderRadius: '14px',
+                background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+                color: '#ffffff',
+                border: 'none',
+                fontWeight: 700,
+                fontSize: '0.95rem',
+                cursor: 'pointer',
+                boxShadow: '0 4px 20px rgba(245, 158, 11, 0.4)'
+              }}
             >
-              Lock in your $0 Guarantee
-            </Button>
-
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', color: '#64748b', fontSize: '0.75rem', marginTop: '12px' }}>
-              <ShieldCheck size={14} style={{ color: '#10b981' }} />
-              <span>Includes 7-Year Fixed No-Bill Performance Contract</span>
-            </div>
+              <span>Download Engineering Audit Report</span>
+              <ArrowRight size={16} />
+            </button>
           </div>
         </div>
       </div>

@@ -1,103 +1,118 @@
 import React from 'react';
-import { ShieldCheck, Calendar, Sun, Cpu } from 'lucide-react';
+import { Sun, CheckCircle, Shield, Award } from 'lucide-react';
 
 export default function MetricsStrip() {
   const metrics = [
     {
-      value: '$0 Guaranteed',
-      label: 'Grid Electricity Bill',
-      icon: <ShieldCheck size={20} style={{ color: '#10b981' }} />
+      icon: Sun,
+      color: '#f59e0b',
+      value: '98.4%',
+      label: 'POA Irradiance Accuracy',
+      desc: 'NREL PVLib Benchmarked'
     },
     {
-      value: '7 Years',
-      label: 'Fixed Performance Contract',
-      icon: <Calendar size={20} style={{ color: '#f59e0b' }} />
+      icon: CheckCircle,
+      color: '#10b981',
+      value: 'CityGML LOD2',
+      label: 'Vector Facet Normal Extraction',
+      desc: 'Sub-Degree Azimuth & Pitch'
     },
     {
-      value: '100% Clean',
-      label: 'Solar & Battery Backup Power',
-      icon: <Sun size={20} style={{ color: '#38bdf8' }} />
+      icon: Shield,
+      color: '#38bdf8',
+      value: '60 FPS WebGL',
+      label: 'Ray-Traced Shadow Occlusion',
+      desc: 'Real-Time Hardware Raycasting'
     },
     {
-      value: '24/7 AI',
-      label: 'Smart Grid Monitoring',
-      icon: <Cpu size={20} style={{ color: '#8b5cf6' }} />
+      icon: Award,
+      color: '#8b5cf6',
+      value: '8,760 Vectors',
+      label: 'Hourly Diurnal Solar Tracking',
+      desc: 'Annual Simulation Engine'
     }
   ];
 
   return (
     <section
       style={{
-        position: 'relative',
-        zIndex: 20,
+        background: 'rgba(15, 23, 42, 0.75)',
+        backdropFilter: 'blur(20px)',
         borderTop: '1px solid rgba(255, 255, 255, 0.08)',
         borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
-        background: 'rgba(15, 23, 42, 0.75)',
-        backdropFilter: 'blur(16px)',
-        WebkitBackdropFilter: 'blur(16px)',
-        padding: '30px 0'
+        padding: '36px 0'
       }}
     >
-      <div className="container">
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-            gap: '24px',
-            alignItems: 'center'
-          }}
-        >
-          {metrics.map((item, index) => (
+      <div
+        className="container"
+        style={{
+          maxWidth: '1280px',
+          margin: '0 auto',
+          padding: '0 24px',
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+          gap: '24px'
+        }}
+      >
+        {metrics.map((m, idx) => {
+          const Icon = m.icon;
+          return (
             <div
-              key={index}
+              key={idx}
               style={{
                 display: 'flex',
                 alignItems: 'center',
                 gap: '16px',
-                padding: '8px 12px'
+                padding: '16px 20px',
+                borderRadius: '16px',
+                background: 'rgba(255, 255, 255, 0.02)',
+                border: '1px solid rgba(255, 255, 255, 0.05)'
               }}
             >
               <div
                 style={{
-                  width: '44px',
-                  height: '44px',
+                  width: '46px',
+                  height: '46px',
                   borderRadius: '12px',
-                  background: 'rgba(255, 255, 255, 0.04)',
-                  border: '1px solid rgba(255, 255, 255, 0.08)',
+                  background: `${m.color}15`,
+                  border: `1px solid ${m.color}35`,
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   flexShrink: 0
                 }}
               >
-                {item.icon}
+                <Icon size={22} color={m.color} />
               </div>
               <div>
                 <div
                   style={{
-                    fontSize: '1.3rem',
+                    fontSize: '1.4rem',
                     fontWeight: 800,
                     color: '#ffffff',
-                    fontFamily: 'var(--font-heading)',
-                    lineHeight: 1.2
+                    lineHeight: 1.1,
+                    fontFamily: 'monospace'
                   }}
                 >
-                  {item.value}
+                  {m.value}
                 </div>
                 <div
                   style={{
-                    fontSize: '0.8rem',
-                    color: '#94a3b8',
-                    fontWeight: 500,
+                    fontSize: '0.82rem',
+                    fontWeight: 700,
+                    color: '#e2e8f0',
                     marginTop: '2px'
                   }}
                 >
-                  {item.label}
+                  {m.label}
+                </div>
+                <div style={{ fontSize: '0.72rem', color: '#94a3b8' }}>
+                  {m.desc}
                 </div>
               </div>
             </div>
-          ))}
-        </div>
+          );
+        })}
       </div>
     </section>
   );

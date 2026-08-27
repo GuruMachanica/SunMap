@@ -27,45 +27,26 @@ export default function FinalCta({ onLaunchStudio, onOpenQuote }) {
 
           <div style={{ display: 'flex', justifyContent: 'center', gap: '16px', flexWrap: 'wrap' }}>
             <button
-              onClick={() => onLaunchStudio('commercial')}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                padding: '14px 32px',
-                borderRadius: '9999px',
-                background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
-                color: '#ffffff',
-                border: 'none',
-                fontWeight: 700,
-                fontSize: '1rem',
-                cursor: 'pointer',
-                boxShadow: '0 4px 25px rgba(245, 158, 11, 0.5)'
-              }}
-            >
-              <Box size={18} />
-              <span>Launch 3D Studio</span>
-              <ArrowRight size={16} />
-            </button>
-
-            <button
-              onClick={() => onOpenQuote()}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                padding: '14px 28px',
-                borderRadius: '9999px',
-                background: 'rgba(255, 255, 255, 0.05)',
-                border: '1px solid rgba(255, 255, 255, 0.15)',
-                color: '#ffffff',
-                fontWeight: 700,
-                fontSize: '1rem',
-                cursor: 'pointer'
-              }}
-            >
-              <span>Instant Solar Audit</span>
-            </button>
+    onClick={() => {
+      const el = document.getElementById('calculator');
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
+    }}
+    style={{
+      display: 'flex',
+      alignItems: 'center',
+      gap: '8px',
+      padding: '14px 28px',
+      borderRadius: '9999px',
+      background: 'rgba(255, 255, 255, 0.05)',
+      border: '1px solid rgba(255, 255, 255, 0.15)',
+      color: '#ffffff',
+      fontWeight: 700,
+      fontSize: '1rem',
+      cursor: 'pointer'
+    }}
+  >
+    <span>Calculate ROI</span>
+  </button>
           </div>
         </div>
       </div>

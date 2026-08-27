@@ -62,11 +62,9 @@ export default function App() {
     <div className="app-root" style={{ minHeight: '100vh', position: 'relative', background: '#090d16', color: '#f8fafc' }}>
       {/* 1. Universal Glassmorphic Header */}
       <Navbar
-        activeTab={activeTab}
-        setActiveTab={setActiveTab}
-        onOpenQuote={() => handleOpenQuote()}
-        onOpenReport={() => setReportModalOpen(true)}
-      />
+    activeTab={activeTab}
+    setActiveTab={setActiveTab}
+  />
 
       {activeTab === 'home' ? (
         <main style={{ minHeight: '100vh', position: 'relative', overflowX: 'hidden' }}>

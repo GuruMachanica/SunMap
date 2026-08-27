@@ -137,49 +137,29 @@ export default function HeroSection({ onLaunchStudio, onOpenQuote }) {
             }}
           >
             <button
-              onClick={onLaunchStudio}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                padding: '13px 30px',
-                borderRadius: '9999px',
-                background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
-                color: '#ffffff',
-                border: 'none',
-                fontWeight: 700,
-                fontSize: '0.95rem',
-                cursor: 'pointer',
-                boxShadow: '0 4px 25px rgba(245, 158, 11, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.3)',
-                transition: 'all 0.2s'
-              }}
-            >
-              <Box size={18} />
-              <span>Launch 3D Studio</span>
-              <ArrowRight size={16} />
-            </button>
-
-            <button
-              onClick={onOpenQuote}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                padding: '13px 26px',
-                borderRadius: '9999px',
-                background: 'rgba(9, 13, 22, 0.75)',
-                border: '1px solid rgba(255, 255, 255, 0.2)',
-                backdropFilter: 'blur(16px)',
-                color: '#ffffff',
-                fontWeight: 700,
-                fontSize: '0.95rem',
-                cursor: 'pointer',
-                boxShadow: '0 4px 20px rgba(0,0,0,0.4)',
-                transition: 'all 0.2s'
-              }}
-            >
-              <span>Instant Solar Audit</span>
-            </button>
+    onClick={() => {
+      const el = document.getElementById('how-it-works');
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
+    }}
+    style={{
+      display: 'flex',
+      alignItems: 'center',
+      gap: '8px',
+      padding: '13px 26px',
+      borderRadius: '9999px',
+      background: 'rgba(9, 13, 22, 0.75)',
+      border: '1px solid rgba(255, 255, 255, 0.2)',
+      backdropFilter: 'blur(16px)',
+      color: '#ffffff',
+      fontWeight: 700,
+      fontSize: '0.95rem',
+      cursor: 'pointer',
+      boxShadow: '0 4px 20px rgba(0,0,0,0.4)',
+      transition: 'all 0.2s'
+    }}
+  >
+    <span>Explore Pipeline</span>
+  </button>
           </div>
         </div>
 

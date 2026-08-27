@@ -1,18 +1,31 @@
 import React, { useState, useEffect } from 'react';
-import { Sun, ArrowRight, Box, FileText } from 'lucide-react';
+import { Sun, ArrowRight, Box } from 'lucide-react';
 
-export default function Navbar({ activeTab, setActiveTab, onOpenQuote, onOpenReport }) {
+export default function Navbar({ activeTab, setActiveTab }) {
   const [timeStr, setTimeStr] = useState('');
 
   useEffect(() => {
     const updateTime = () => {
       const now = new Date();
-      setTimeStr(now.toTimeString().split(' ')[0] + ' SYNC');
+      setTimeStr(now.toTimeString().split(' ')[0] + ' UTC');
     };
     updateTime();
     const interval = setInterval(updateTime, 1000);
     return () => clearInterval(interval);
   }, []);
+
+  const scrollToSection = (id) => {
+    if (activeTab !== 'home') {
+      setActiveTab('home');
+      setTimeout(() => {
+        const el = document.getElementById(id);
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+      }, 100);
+    } else {
+      const el = document.getElementById(id);
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
 
   return (
     <header
@@ -41,8 +54,12 @@ export default function Navbar({ activeTab, setActiveTab, onOpenQuote, onOpenRep
           padding: '0 24px'
         }}
       >
+        {/* Brand Logo */}
         <button
-          onClick={() => setActiveTab('home')}
+          onClick={() => {
+            setActiveTab('home');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }}
           style={{
             display: 'flex',
             alignItems: 'center',
@@ -73,6 +90,7 @@ export default function Navbar({ activeTab, setActiveTab, onOpenQuote, onOpenRep
           <span>sunmap<span style={{ color: '#f59e0b' }}>.</span></span>
         </button>
 
+        {/* Section Navigation Links */}
         <nav
           style={{
             display: 'flex',
@@ -108,7 +126,10 @@ export default function Navbar({ activeTab, setActiveTab, onOpenQuote, onOpenRep
           </div>
 
           <button
-            onClick={() => setActiveTab('home')}
+            onClick={() => {
+              setActiveTab('home');
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
             style={{
               background: 'none',
               border: 'none',
@@ -123,32 +144,8 @@ export default function Navbar({ activeTab, setActiveTab, onOpenQuote, onOpenRep
           </button>
 
           <button
-            onClick={() => setActiveTab('studio')}
+            onClick={() => scrollToSection('how-it-works')}
             style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              background: activeTab === 'studio' ? 'rgba(245, 158, 11, 0.2)' : 'rgba(255, 255, 255, 0.05)',
-              border: activeTab === 'studio' ? '1px solid rgba(245, 158, 11, 0.4)' : '1px solid rgba(255, 255, 255, 0.1)',
-              color: activeTab === 'studio' ? '#fbbf24' : '#ffffff',
-              padding: '6px 14px',
-              borderRadius: '9999px',
-              fontWeight: 700,
-              fontSize: '0.85rem',
-              cursor: 'pointer',
-              transition: 'all 0.2s'
-            }}
-          >
-            <Box size={14} color="#f59e0b" />
-            <span>3D Studio</span>
-          </button>
-
-          <button
-            onClick={onOpenReport}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
               background: 'none',
               border: 'none',
               color: '#94a3b8',
@@ -158,15 +155,59 @@ export default function Navbar({ activeTab, setActiveTab, onOpenQuote, onOpenRep
               transition: 'color 0.2s'
             }}
           >
-            <FileText size={14} />
-            <span>Audit Report</span>
+            How It Works
+          </button>
+
+          <button
+            onClick={() => scrollToSection('calculator')}
+            style={{
+              background: 'none',
+              border: 'none',
+              color: '#94a3b8',
+              fontWeight: 600,
+              fontSize: '0.9rem',
+              cursor: 'pointer',
+              transition: 'color 0.2s'
+            }}
+          >
+            Calculator
+          </button>
+
+          <button
+            onClick={() => scrollToSection('tech')}
+            style={{
+              background: 'none',
+              border: 'none',
+              color: '#94a3b8',
+              fontWeight: 600,
+              fontSize: '0.9rem',
+              cursor: 'pointer',
+              transition: 'color 0.2s'
+            }}
+          >
+            Architecture
+          </button>
+
+          <button
+            onClick={() => scrollToSection('cases')}
+            style={{
+              background: 'none',
+              border: 'none',
+              color: '#94a3b8',
+              fontWeight: 600,
+              fontSize: '0.9rem',
+              cursor: 'pointer',
+              transition: 'color 0.2s'
+            }}
+          >
+            Case Studies
           </button>
         </nav>
 
+        {/* Primary Header Action */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
           <button
-            onClick={onOpenQuote}
-            className="btn-glow-pulse"
+            onClick={() => setActiveTab('studio')}
             style={{
               position: 'relative',
               display: 'flex',
@@ -181,12 +222,12 @@ export default function Navbar({ activeTab, setActiveTab, onOpenQuote, onOpenRep
               fontSize: '0.92rem',
               cursor: 'pointer',
               boxShadow: '0 4px 20px rgba(245, 158, 11, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3)',
-              transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+              transition: 'all 0.3s ease',
               outline: 'none'
             }}
           >
-            <span>Instant Quote</span>
-            <ArrowRight size={16} />
+            <Box size={16} />
+            <span>Launch 3D Studio</span>
           </button>
         </div>
       </div>

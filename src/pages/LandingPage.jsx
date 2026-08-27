@@ -10,6 +10,7 @@ import TechStackMatrix from "../components/TechStackMatrix";
 import HowItWorks from "../components/HowItWorks";
 import CaseStudies from "../components/CaseStudies";
 import Testimonials from "../components/Testimonials";
+import SimulationVideoPlayer from "../components/SimulationVideoPlayer";
 import ProjectGenesis from "../components/ProjectGenesis";
 import FaqSection from "../components/FaqSection";
 import Footer from "../components/Footer";
@@ -138,17 +139,22 @@ const LandingPage = ({ onLaunchStudio, onOpenReport, onOpenQuote, setActiveTab }
         </div>
       </section>
 
-      {/* 2. Global Climate Profiles */}
+      {/* 2. Simulation Video Showcase */}
+      <section className="max-w-5xl mx-auto my-12 px-4 sm:px-8 relative z-10">
+        <SimulationVideoPlayer />
+      </section>
+
+      {/* 3. Global Climate Profiles */}
       <section className="max-w-5xl mx-auto my-12 px-4 sm:px-8 relative z-10">
         <ClimateSelector activeCity={activeCity} setActiveCity={setActiveCity} />
       </section>
 
-      {/* 3. 24-Hour Solar Flux Diurnal Curve */}
+      {/* 4. 24-Hour Solar Flux Diurnal Curve */}
       <section className="max-w-5xl mx-auto my-12 px-4 sm:px-8 relative z-10">
         <HourlyIrradianceChart />
       </section>
 
-      {/* 4. Instant Solar ROI Calculator Widget */}
+      {/* 5. Instant Solar ROI Calculator Widget */}
       <section className="max-w-5xl mx-auto my-12 px-4 sm:px-8 relative z-10">
         <div className="glass-panel p-6 sm:p-8 rounded-3xl border border-amber-500/20 relative overflow-hidden">
           <div className="absolute -right-16 -top-16 w-48 h-48 bg-amber-500/10 rounded-full blur-2xl pointer-events-none" />
@@ -213,22 +219,22 @@ const LandingPage = ({ onLaunchStudio, onOpenReport, onOpenQuote, setActiveTab }
         </div>
       </section>
 
-      {/* 5. How It Works Simulation Pipeline */}
+      {/* 6. How It Works Pipeline */}
       <section className="max-w-5xl mx-auto my-16 px-4 sm:px-8 relative z-10">
         <HowItWorks />
       </section>
 
-      {/* 6. Bankable Economics & Tariff Modeler */}
+      {/* 7. Bankable Economics & Tariff Modeler */}
       <section className="max-w-5xl mx-auto my-12 px-4 sm:px-8 relative z-10">
         <EconomicsModeler baseAnnualKwh={estYield} />
       </section>
 
-      {/* 7. Preloaded CityGML Data Schemas */}
+      {/* 8. Preloaded CityGML Data Schemas */}
       <section className="max-w-5xl mx-auto my-12 px-4 sm:px-8 relative z-10">
         <DataFileInspector onLaunchStudio={onLaunchStudio} />
       </section>
 
-      {/* 8. Architectural Topologies */}
+      {/* 9. Architectural Topologies */}
       <section className="max-w-5xl mx-auto my-16 px-4 sm:px-8 space-y-6 relative z-10">
         <div className="text-center space-y-2">
           <span className="text-[10px] font-mono text-amber-400 uppercase tracking-widest block font-bold">
@@ -271,37 +277,37 @@ const LandingPage = ({ onLaunchStudio, onOpenReport, onOpenQuote, setActiveTab }
         </div>
       </section>
 
-      {/* 9. Case Studies */}
+      {/* 10. Case Studies */}
       <section className="max-w-5xl mx-auto my-16 px-4 sm:px-8 relative z-10">
         <CaseStudies onOpenQuote={onOpenQuote} />
       </section>
 
-      {/* 10. Client Testimonials */}
+      {/* 11. Client Testimonials */}
       <section className="max-w-5xl mx-auto my-16 px-4 sm:px-8 relative z-10">
         <Testimonials />
       </section>
 
-      {/* 11. Physics Formulations Breakdown */}
+      {/* 12. Physics Formulations Breakdown */}
       <section className="max-w-5xl mx-auto my-12 px-4 sm:px-8 relative z-10">
         <PhysicsBreakdown />
       </section>
 
-      {/* 12. Technology Stack Matrix */}
+      {/* 13. Technology Stack Matrix */}
       <section className="max-w-5xl mx-auto my-12 px-4 sm:px-8 relative z-10">
         <TechStackMatrix />
       </section>
 
-      {/* 13. Project Genesis & Authors */}
+      {/* 14. Project Genesis & Authors */}
       <section className="max-w-5xl mx-auto my-12 px-4 sm:px-8 relative z-10">
         <ProjectGenesis />
       </section>
 
-      {/* 14. FAQ Knowledge Hub */}
+      {/* 15. FAQ Knowledge Hub */}
       <section className="max-w-5xl mx-auto my-12 px-4 sm:px-8 relative z-10">
         <FaqSection />
       </section>
 
-      {/* 15. Universal Footer */}
+      {/* 16. Universal Footer */}
       <Footer setActiveTab={setActiveTab} onOpenReport={onOpenReport} />
     </div>
   );

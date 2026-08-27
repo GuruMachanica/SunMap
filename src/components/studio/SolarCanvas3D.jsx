@@ -484,35 +484,6 @@ const SolarCanvas3D = ({
         ))}
       </div>
 
-      {/* Dataset Telemetry Banner Overlay */}
-      <div style={{
-        position: "absolute",
-        top: "20px",
-        left: "20px",
-        zIndex: 10,
-        background: "rgba(15, 23, 42, 0.8)",
-        backdropFilter: "blur(16px)",
-        border: "1px solid rgba(255, 255, 255, 0.1)",
-        padding: "10px 16px",
-        borderRadius: "14px",
-        color: "#ffffff",
-        maxWidth: "340px",
-        boxShadow: "0 10px 30px rgba(0,0,0,0.5)",
-        fontFamily: "monospace"
-      }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "6px", color: "#f59e0b", fontSize: "0.72rem", fontWeight: 700, marginBottom: "4px" }}>
-          <Globe size={13} />
-          <span>CITYGML LOD2 DATASET ACTIVE</span>
-        </div>
-        <div style={{ fontSize: "0.85rem", fontWeight: 800, color: "#f8fafc", marginBottom: "2px" }}>
-          {currentTopology.name}
-        </div>
-        <div style={{ fontSize: "0.72rem", color: "#94a3b8", display: "flex", alignItems: "center", gap: "4px" }}>
-          <MapPin size={11} color="#38bdf8" />
-          <span>{currentTopology.location}</span>
-        </div>
-      </div>
-
       {/* Viewport Instructions */}
       <div style={{
         position: "absolute",

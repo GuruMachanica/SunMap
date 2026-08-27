@@ -18,7 +18,11 @@ const StudioPage = ({
   baseIrradiance,
   meshStats,
   setMeshStats,
-  onBackToHome
+  onBackToHome,
+  isPlaying,
+  setIsPlaying,
+  panelTilt,
+  setPanelTilt
 }) => {
   return (
     <div className="relative w-full h-full pt-16 flex flex-col overflow-hidden select-none">
@@ -30,6 +34,7 @@ const StudioPage = ({
           shadingMode={shadingMode}
           scenePreset={scenePreset}
           onMeshStatsUpdate={setMeshStats}
+          panelTilt={panelTilt}
         />
 
         {/* Back to Overview Floating Button */}
@@ -53,6 +58,10 @@ const StudioPage = ({
             setShadingMode={setShadingMode}
             elevation={elevation}
             azimuth={azimuth}
+            isPlaying={isPlaying}
+            setIsPlaying={setIsPlaying}
+            panelTilt={panelTilt}
+            setPanelTilt={setPanelTilt}
           />
         </div>
 

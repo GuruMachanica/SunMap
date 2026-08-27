@@ -1,5 +1,5 @@
-import React from "react";
-import { FaSun, FaClock, FaCalendarAlt, FaLayerGroup, FaCube, FaBuilding, FaHome, FaTh } from "react-icons/fa";
+import React, { useEffect } from "react";
+import { FaSun, FaClock, FaCalendarAlt, FaLayerGroup, FaCube, FaBuilding, FaHome, FaTh, FaPlay, FaPause, FaSlidersH, FaFileCsv } from "react-icons/fa";
 
 const SCENE_PRESETS = [
   { id: "commercial", label: "Commercial", icon: FaBuilding },
@@ -31,9 +31,24 @@ const SolarControls = ({
   shadingMode,
   setShadingMode,
   elevation,
-  azimuth
+  azimuth,
+  isPlaying,
+  setIsPlaying,
+  panelTilt,
+  setPanelTilt
 }) => {
-  // Format decimal hours to HH:MM AM/PM
+  // Auto-play day cycle animation
+  useEffect(() => {
+    if (!isPlaying) return;
+    const interval = setInterval(() => {
+      setTimeOfDay((prev) => {
+        const next = prev + 0.08;
+        return next > 19.0 ? 6.0 : next;
+      });
+    }, 40);
+    return () => clearInterval(interval);
+  }, [isPlaying, setTimeOfDay]);
+
   const formatTime = (h) => {
     const hours = Math.floor(h);
     const minutes = Math.floor((h - hours) * 60);
@@ -43,15 +58,47 @@ const SolarControls = ({
     return `${displayHours}:${padMin} ${period}`;
   };
 
+  const handleExportCsv = () => {
+    let csv = "Hour,Time,Solar_Elevation_Deg,Solar_Azimuth_Deg,ClearSky_GHI_W_m2\n";
+    for (let h = 6.0; h <= 19.0; h += 0.5) {
+      const hd = h - 12.0;
+      const maxElev = season === "summer" ? 72 : season === "equinox" ? 50 : 28;
+      const elev = Math.max(0, maxElev * Math.cos((hd / 6.5) * (Math.PI / 2)));
+      const azim = 180 + (hd / 6.5) * 85;
+      const irr = Math.round(1000 * Math.sin((elev * Math.PI) / 180));
+      csv += `${h.toFixed(1)},${formatTime(h)},${elev.toFixed(1)},${azim.toFixed(1)},${irr}\n`;
+    }
+
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = `SunMap_Hourly_Irradiance_${season}.csv`;
+    link.click();
+  };
+
   return (
-    <div className="glass-panel p-4 sm:p-5 rounded-3xl space-y-5 text-white max-h-[82vh] overflow-y-auto">
-      <div>
-        <span className="text-[10px] font-mono text-amber-400 uppercase tracking-widest block mb-1 font-bold">
-          CELESTIAL &amp; ENVIRONMENT CONTROLS
-        </span>
-        <h2 className="text-[18px] font-extrabold font-sans text-white tracking-tight">
-          Sun Trajectory Engine
-        </h2>
+    <div className="glass-panel p-4 sm:p-5 rounded-3xl space-y-4 text-white max-h-[82vh] overflow-y-auto">
+      <div className="flex items-center justify-between">
+        <div>
+          <span className="text-[10px] font-mono text-amber-400 uppercase tracking-widest block mb-1 font-bold">
+            CELESTIAL &amp; ENVIRONMENT CONTROLS
+          </span>
+          <h2 className="text-[18px] font-extrabold font-sans text-white tracking-tight">
+            Sun Trajectory Engine
+          </h2>
+        </div>
+
+        {/* Auto-Play Cycle Button */}
+        <button
+          onClick={() => setIsPlaying(!isPlaying)}
+          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-mono text-[11px] font-bold border transition-all ${
+            isPlaying
+              ? "bg-amber-400 text-black border-amber-400 shadow-md"
+              : "bg-white/5 text-zinc-300 hover:text-white border-white/10"
+          }`}>
+          {isPlaying ? <FaPause className="w-2.5 h-2.5" /> : <FaPlay className="w-2.5 h-2.5" />}
+          <span>{isPlaying ? "PAUSE" : "PLAY CYCLE"}</span>
+        </button>
       </div>
 
       {/* 1. Time of Day Slider */}
@@ -71,7 +118,10 @@ const SolarControls = ({
           max="19.0"
           step="0.1"
           value={timeOfDay}
-          onChange={(e) => setTimeOfDay(parseFloat(e.target.value))}
+          onChange={(e) => {
+            setIsPlaying(false);
+            setTimeOfDay(parseFloat(e.target.value));
+          }}
           className="w-full accent-amber-400 cursor-pointer h-1.5 bg-zinc-800 rounded-lg"
         />
         <div className="flex justify-between text-[10px] font-mono text-zinc-500">
@@ -93,7 +143,32 @@ const SolarControls = ({
         </div>
       </div>
 
-      {/* 3. Season Preset Selector */}
+      {/* 3. Panel Tilt Slider */}
+      <div className="p-3.5 rounded-2xl bg-white/[0.03] border border-white/5 space-y-2">
+        <div className="flex items-center justify-between text-[12px] font-mono">
+          <span className="flex items-center gap-1.5 text-zinc-300">
+            <FaSlidersH className="w-3 h-3 text-amber-400" />
+            PV PANEL TILT ANGLE
+          </span>
+          <span className="text-white font-bold">{panelTilt}°</span>
+        </div>
+        <input
+          type="range"
+          min="0"
+          max="45"
+          step="1"
+          value={panelTilt}
+          onChange={(e) => setPanelTilt(parseInt(e.target.value))}
+          className="w-full accent-amber-400 cursor-pointer h-1.5 bg-zinc-800 rounded-lg"
+        />
+        <div className="flex justify-between text-[10px] font-mono text-zinc-500">
+          <span>0° (Flat Roof)</span>
+          <span>25° (Optimal Pitch)</span>
+          <span>45° (Steep)</span>
+        </div>
+      </div>
+
+      {/* 4. Season Preset Selector */}
       <div className="space-y-1.5">
         <label className="text-[11px] font-mono text-zinc-400 flex items-center gap-1.5">
           <FaCalendarAlt className="w-3 h-3 text-amber-400" />
@@ -116,7 +191,7 @@ const SolarControls = ({
         </div>
       </div>
 
-      {/* 4. 3D Architectural Scene Selector */}
+      {/* 5. 3D Architectural Scene Selector */}
       <div className="space-y-1.5">
         <label className="text-[11px] font-mono text-zinc-400 flex items-center gap-1.5">
           <FaCube className="w-3 h-3 text-amber-400" />
@@ -142,7 +217,7 @@ const SolarControls = ({
         </div>
       </div>
 
-      {/* 5. Shading Mode Tabs */}
+      {/* 6. Shading Mode Tabs */}
       <div className="space-y-1.5">
         <label className="text-[11px] font-mono text-zinc-400 flex items-center gap-1.5">
           <FaLayerGroup className="w-3 h-3 text-amber-400" />
@@ -163,6 +238,14 @@ const SolarControls = ({
           ))}
         </div>
       </div>
+
+      {/* 7. Export CSV Dataset */}
+      <button
+        onClick={handleExportCsv}
+        className="w-full py-2.5 rounded-xl bg-white/[0.04] hover:bg-white/10 text-white font-mono text-[11px] font-bold flex items-center justify-center gap-2 border border-white/10 transition-colors">
+        <FaFileCsv className="w-3.5 h-3.5 text-amber-400" />
+        <span>EXPORT HOURLY IRRADIANCE (.CSV)</span>
+      </button>
     </div>
   );
 };

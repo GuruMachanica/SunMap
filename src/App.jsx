@@ -5,23 +5,20 @@ import StudioPage from "./pages/StudioPage";
 import ReportModal from "./components/ReportModal";
 
 const App = () => {
-  // Navigation: "home" | "studio"
   const [activeTab, setActiveTab] = useState("home");
-
-  // Solar Trajectory State
   const [timeOfDay, setTimeOfDay] = useState(12.0); // 12:00 PM
-  const [season, setSeason] = useState("summer"); // "summer", "equinox", "winter"
+  const [season, setSeason] = useState("summer");
   const [scenePreset, setScenePreset] = useState("commercial");
   const [shadingMode, setShadingMode] = useState("realistic");
   const [reportModalOpen, setReportModalOpen] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [panelTilt, setPanelTilt] = useState(25); // 25 degrees standard
 
-  // Mesh stats updated dynamically from 3D viewport
   const [meshStats, setMeshStats] = useState({
     totalRooftopArea: 142.5,
     panelsCount: 84
   });
 
-  // Calculate Elevation & Azimuth from Time of Day and Season
   const { elevation, azimuth, baseIrradiance } = useMemo(() => {
     const maxElev = season === "summer" ? 72 : season === "equinox" ? 50 : 28;
     const hourDelta = timeOfDay - 12.0;
@@ -44,14 +41,12 @@ const App = () => {
 
   return (
     <div className="relative w-screen h-screen bg-[#080808] text-white overflow-hidden flex flex-col font-sans">
-      {/* Top Universal Navbar */}
       <Navbar
         activeTab={activeTab}
         setActiveTab={setActiveTab}
         onOpenReport={() => setReportModalOpen(true)}
       />
 
-      {/* Main Content Area */}
       <main className="relative flex-1 w-full h-full overflow-hidden">
         {activeTab === "home" ? (
           <LandingPage
@@ -74,11 +69,14 @@ const App = () => {
             meshStats={meshStats}
             setMeshStats={setMeshStats}
             onBackToHome={() => setActiveTab("home")}
+            isPlaying={isPlaying}
+            setIsPlaying={setIsPlaying}
+            panelTilt={panelTilt}
+            setPanelTilt={setPanelTilt}
           />
         )}
       </main>
 
-      {/* Official Audit Summary Modal */}
       <ReportModal
         isOpen={reportModalOpen}
         onClose={() => setReportModalOpen(false)}

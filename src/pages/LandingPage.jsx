@@ -1,5 +1,10 @@
 import React, { useState } from "react";
-import { FaSun, FaCube, FaBolt, FaDollarSign, FaLeaf, FaArrowRight, FaAward } from "react-icons/fa";
+import { FaSun, FaCube, FaBolt, FaDollarSign, FaLeaf, FaArrowRight, FaAward, FaRulerCombined } from "react-icons/fa";
+import BackgroundParticles from "../components/BackgroundParticles";
+import EconomicsModeler from "../components/EconomicsModeler";
+import ClimateSelector from "../components/ClimateSelector";
+import PhysicsBreakdown from "../components/PhysicsBreakdown";
+import FaqSection from "../components/FaqSection";
 
 const TOPOLOGIES = [
   {
@@ -38,19 +43,31 @@ const TOPOLOGIES = [
 
 const LandingPage = ({ onLaunchStudio, onOpenReport }) => {
   const [quickArea, setQuickArea] = useState(120);
+  const [activeCity, setActiveCity] = useState({
+    id: "phoenix",
+    name: "Phoenix, USA",
+    lat: "33.4° N",
+    ghi: 2240,
+    peakHours: "6.1 hrs/day",
+    tag: "High Solar"
+  });
 
-  // Quick estimator calculations
-  const estYield = Math.round(quickArea * 1550 * 0.20 * 0.82);
-  const estSavings = Math.round(estYield * 0.15);
+  // Quick estimator calculations scaled by selected city insolation
+  const ghiFactor = activeCity.ghi / 1850;
+  const estYield = Math.round(quickArea * activeCity.ghi * 0.20 * 0.82);
+  const estSavings = Math.round(estYield * 0.16);
   const estCo2 = ((estYield * 0.85) / 2204.62).toFixed(1);
 
   return (
     <div className="relative min-h-screen bg-[#080808] text-white pt-24 pb-20 px-4 sm:px-8 overflow-y-auto">
-      {/* Background Decorative Solar Gradients */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] bg-gradient-to-b from-amber-500/10 via-amber-600/5 to-transparent blur-3xl pointer-events-none -z-10" />
+      {/* Floating Solar Particles */}
+      <BackgroundParticles />
+
+      {/* Decorative Glow */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] bg-gradient-to-b from-amber-500/15 via-amber-600/5 to-transparent blur-3xl pointer-events-none -z-10" />
 
       {/* 1. Hero Section */}
-      <section className="max-w-5xl mx-auto text-center space-y-6 pt-8 pb-16">
+      <section className="max-w-5xl mx-auto text-center space-y-6 pt-8 pb-16 relative z-10">
         <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/[0.04] border border-white/10 font-mono text-[11px] text-zinc-300">
           <FaAward className="w-3.5 h-3.5 text-amber-400" />
           <span>CodeStorm’25 Winner • 3D Spatial Solar Intelligence</span>
@@ -111,14 +128,19 @@ const LandingPage = ({ onLaunchStudio, onOpenReport }) => {
         </div>
       </section>
 
-      {/* 2. Interactive Solar Quick Estimator Widget */}
-      <section className="max-w-4xl mx-auto my-12 glass-panel p-6 sm:p-8 rounded-3xl border border-amber-500/20 relative overflow-hidden">
+      {/* 2. Global Climate Selector */}
+      <section className="max-w-5xl mx-auto my-12 relative z-10">
+        <ClimateSelector activeCity={activeCity} setActiveCity={setActiveCity} />
+      </section>
+
+      {/* 3. Interactive Solar Quick Estimator Widget */}
+      <section className="max-w-5xl mx-auto my-12 glass-panel p-6 sm:p-8 rounded-3xl border border-amber-500/20 relative overflow-hidden z-10">
         <div className="absolute -right-16 -top-16 w-48 h-48 bg-amber-500/10 rounded-full blur-2xl pointer-events-none" />
 
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 pb-6 border-b border-white/10">
           <div>
             <span className="text-[10px] font-mono text-amber-400 uppercase tracking-widest block font-bold">
-              ESTIMATE YOUR BUILDING POTENTIAL
+              ESTIMATE YOUR BUILDING POTENTIAL ({activeCity.name.toUpperCase()})
             </span>
             <h2 className="text-2xl sm:text-3xl font-extrabold font-sans text-white">
               Instant Solar ROI Calculator
@@ -175,8 +197,13 @@ const LandingPage = ({ onLaunchStudio, onOpenReport }) => {
         </div>
       </section>
 
-      {/* 3. Architectural Topologies */}
-      <section className="max-w-5xl mx-auto my-16 space-y-6">
+      {/* 4. Financial Economics Modeler */}
+      <section className="max-w-5xl mx-auto my-12 relative z-10">
+        <EconomicsModeler baseAnnualKwh={estYield} />
+      </section>
+
+      {/* 5. Architectural Topologies */}
+      <section className="max-w-5xl mx-auto my-16 space-y-6 relative z-10">
         <div className="text-center space-y-2">
           <span className="text-[10px] font-mono text-amber-400 uppercase tracking-widest block font-bold">
             PRE-CONFIGURED CAD SCENES
@@ -216,6 +243,16 @@ const LandingPage = ({ onLaunchStudio, onOpenReport }) => {
             </div>
           ))}
         </div>
+      </section>
+
+      {/* 6. Physics Breakdown */}
+      <section className="max-w-5xl mx-auto my-12 relative z-10">
+        <PhysicsBreakdown />
+      </section>
+
+      {/* 7. FAQ Hub */}
+      <section className="max-w-5xl mx-auto my-12 relative z-10">
+        <FaqSection />
       </section>
     </div>
   );

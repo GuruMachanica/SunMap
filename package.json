@@ -1,30 +1,22 @@
 {
-  "name": "sunmap-studio",
-  "private": true,
+  "name": "sunmap-ecosystem",
   "version": "2.0.0",
-  "type": "module",
+  "private": true,
+  "description": "SunMap - Smart 3D Spatial Solar Energy & Rooftop Intelligence Engine",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
+    "dev": "npm --prefix Frontend run dev",
+    "build": "npm --prefix Frontend run build",
+    "preview": "npm --prefix Frontend run preview",
+    "start:backend": "python Backend/server.py"
   },
-  "dependencies": {
-    "canvas-confetti": "^1.9.4",
-    "framer-motion": "^10.12.16",
-    "gsap": "^3.15.0",
-    "lucide-react": "^0.263.1",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-icons": "^4.9.0",
-    "three": "^0.153.0"
-  },
-  "devDependencies": {
-    "@types/react": "^18.2.14",
-    "@types/react-dom": "^18.2.6",
-    "@vitejs/plugin-react": "^4.0.1",
-    "autoprefixer": "^10.4.14",
-    "postcss": "^8.4.24",
-    "tailwindcss": "^3.3.2",
-    "vite": "^4.3.9"
-  }
+  "keywords": [
+    "solar",
+    "threejs",
+    "citygml",
+    "photovoltaic",
+    "gis",
+    "ray-tracing"
+  ],
+  "author": "Team Ironlogic",
+  "license": "Proprietary"
 }

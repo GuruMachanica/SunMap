@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Sun, ArrowRight, UserCheck, Box, FileText } from 'lucide-react';
+import { Sun, ArrowRight, Box, FileText } from 'lucide-react';
 
 export default function Navbar({ activeTab, setActiveTab, onOpenQuote, onOpenReport }) {
   const [timeStr, setTimeStr] = useState('');
@@ -41,7 +41,6 @@ export default function Navbar({ activeTab, setActiveTab, onOpenQuote, onOpenRep
           padding: '0 24px'
         }}
       >
-        {/* Brand Logo */}
         <button
           onClick={() => setActiveTab('home')}
           style={{
@@ -74,7 +73,6 @@ export default function Navbar({ activeTab, setActiveTab, onOpenQuote, onOpenRep
           <span>sunmap<span style={{ color: '#f59e0b' }}>.</span></span>
         </button>
 
-        {/* Live System Clock & Navigation Links */}
         <nav
           style={{
             display: 'flex',
@@ -165,7 +163,6 @@ export default function Navbar({ activeTab, setActiveTab, onOpenQuote, onOpenRep
           </button>
         </nav>
 
-        {/* Action Button */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
           <button
             onClick={onOpenQuote}

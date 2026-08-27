@@ -32,7 +32,6 @@ const SolarCanvas3D = ({
     const width = currentMount.clientWidth;
     const height = currentMount.clientHeight;
 
-    // 1. Scene, Camera, Renderer
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0x0c0f17);
     scene.fog = new THREE.FogExp2(0x0c0f17, 0.008);
@@ -51,14 +50,12 @@ const SolarCanvas3D = ({
     renderer.toneMappingExposure = 1.25;
     currentMount.appendChild(renderer.domElement);
 
-    // 2. Realistic Sky & Lighting Environment
     const hemiLight = new THREE.HemisphereLight(0xe0f2fe, 0x1c1917, 0.95);
     scene.add(hemiLight);
 
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
     scene.add(ambientLight);
 
-    // Primary High Sun Light
     const sunLight = new THREE.DirectionalLight(0xfff7ed, 4.2);
     sunLight.castShadow = true;
     sunLight.shadow.mapSize.width = 4096;
@@ -73,14 +70,12 @@ const SolarCanvas3D = ({
     scene.add(sunLight);
     sunLightRef.current = sunLight;
 
-    // Elevated Glowing Sun Disk
     const sunGeo = new THREE.SphereGeometry(2.4, 32, 32);
     const sunMat = new THREE.MeshBasicMaterial({ color: 0xffd159 });
     const sunSphere = new THREE.Mesh(sunGeo, sunMat);
     scene.add(sunSphere);
     sunSphereRef.current = sunSphere;
 
-    // 3. Ground Terrain & City Asphalt
     const groundGeo = new THREE.PlaneGeometry(160, 160);
     const groundMat = new THREE.MeshStandardMaterial({
       color: 0x111317,
@@ -100,7 +95,6 @@ const SolarCanvas3D = ({
     scene.add(modelsGroup);
     modelsGroupRef.current = modelsGroup;
 
-    // 4. Smooth Orbit Controller
     let isDragging = false;
     let isPanning = false;
     let previousMousePosition = { x: 0, y: 0 };
@@ -190,13 +184,12 @@ const SolarCanvas3D = ({
     };
   }, []);
 
-  // Update Elevated Sun Position with Dynamic Sky & Warmth
   useEffect(() => {
     if (!sunLightRef.current || !sunSphereRef.current || !sceneRef.current) return;
 
     const radElev = (elevation * Math.PI) / 180;
     const radAzim = (azimuth * Math.PI) / 180;
-    const dist = 68; // Elevated sun distance
+    const dist = 68;
 
     const x = dist * Math.cos(radElev) * Math.sin(radAzim);
     const y = Math.max(1.5, dist * Math.sin(radElev));
@@ -220,7 +213,6 @@ const SolarCanvas3D = ({
     }
   }, [elevation, azimuth]);
 
-  // Construct Realistic Full-Scale 3D Neighborhoods for All Modes
   useEffect(() => {
     if (!modelsGroupRef.current) return;
     const group = modelsGroupRef.current;
@@ -232,7 +224,6 @@ const SolarCanvas3D = ({
     }
     solarPanelsRef.current = [];
 
-    // Helper Materials
     const getBuildingMat = (color = 0x334155) => {
       if (shadingMode === "heatmap") return new THREE.MeshStandardMaterial({ color: 0x2563eb, roughness: 0.5, metalness: 0.2 });
       if (shadingMode === "occlusion") return new THREE.MeshStandardMaterial({ color: 0x2a2a2a, roughness: 0.9 });
@@ -257,7 +248,6 @@ const SolarCanvas3D = ({
       return new THREE.MeshStandardMaterial({ color: 0x0a101d, emissive: 0x1e3a8a, emissiveIntensity: 0.3, roughness: 0.12, metalness: 0.9 });
     };
 
-    // Helper: Add Trees
     const addTree = (x, z, scale = 1.0) => {
       const trunk = new THREE.Mesh(
         new THREE.CylinderGeometry(0.25 * scale, 0.35 * scale, 1.8 * scale, 8),
@@ -276,7 +266,6 @@ const SolarCanvas3D = ({
       group.add(foliage);
     };
 
-    // Helper: Add Stylized Low-Poly Car
     const addCar = (x, z, rotY = 0, color = 0xd97706) => {
       const car = new THREE.Mesh(new THREE.BoxGeometry(3.6, 1.1, 1.8), new THREE.MeshStandardMaterial({ color, roughness: 0.3, metalness: 0.7 }));
       car.position.set(x, 0.55, z);
@@ -285,7 +274,6 @@ const SolarCanvas3D = ({
       group.add(car);
     };
 
-    // Helper: Add Solar Panel Array with Dynamic Tilt Support
     let panelsCount = 0;
     const addSolarArray = (startX, startZ, rows, cols, panelW, panelD, roofY, baseTiltRad = 0) => {
       const activeTilt = baseTiltRad !== 0 ? baseTiltRad : (panelTilt * Math.PI) / 180;
@@ -310,9 +298,7 @@ const SolarCanvas3D = ({
 
     let totalRooftopArea = 0;
 
-    // SCENE 1: COMMERCIAL TECH PARK & CAMPUS
     if (scenePreset === "commercial") {
-      // Main 10-Story Office Tower
       const b1 = new THREE.Mesh(new THREE.BoxGeometry(18, 14, 18), getBuildingMat(0x1e293b));
       b1.position.set(-6, 7, -2);
       b1.castShadow = true;
@@ -325,7 +311,6 @@ const SolarCanvas3D = ({
 
       addSolarArray(-12, -8, 6, 6, 2.2, 1.5, 14.2);
 
-      // Secondary Research Wing (5 Stories)
       const b2 = new THREE.Mesh(new THREE.BoxGeometry(14, 7, 12), getBuildingMat(0x334155));
       b2.position.set(13, 3.5, -4);
       b2.castShadow = true;
@@ -338,12 +323,10 @@ const SolarCanvas3D = ({
 
       addSolarArray(8, -8, 4, 4, 2.0, 1.5, 7.2);
 
-      // Glass Skybridge connecting buildings
       const bridge = new THREE.Mesh(new THREE.BoxGeometry(7, 2, 2.5), glassMat);
       bridge.position.set(3.5, 5.5, -3);
       group.add(bridge);
 
-      // Carport Solar Canopy in Front
       for (let cp = -12; cp <= 12; cp += 8) {
         const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.2, 3, 8), getBuildingMat(0x94a3b8));
         pole.position.set(cp, 1.5, 16);
@@ -359,12 +342,10 @@ const SolarCanvas3D = ({
         panelsCount += 12;
       }
 
-      // Asphalt Roads & Cars
       addCar(-8, 16, Math.PI / 2, 0xef4444);
       addCar(0, 16, Math.PI / 2, 0x3b82f6);
       addCar(8, 16, Math.PI / 2, 0xffffff);
 
-      // Trees
       addTree(-18, 8);
       addTree(-18, -10);
       addTree(22, 6);
@@ -372,12 +353,9 @@ const SolarCanvas3D = ({
       addTree(3, 12);
 
       totalRooftopArea = 210.0;
-    }
-
-    // SCENE 2: URBAN HIGH-RISE METROPOLITAN DISTRICT
-    else if (scenePreset === "highrise") {
+    } else if (scenePreset === "highrise") {
       const towers = [
-        { x: 0, z: 0, w: 12, d: 12, h: 32, color: 0x0f172a }, // Main Skyscraper
+        { x: 0, z: 0, w: 12, d: 12, h: 32, color: 0x0f172a },
         { x: -16, z: -10, w: 10, d: 10, h: 22, color: 0x1e293b },
         { x: 16, z: -8, w: 10, d: 10, h: 26, color: 0x334155 },
         { x: -14, z: 12, w: 9, d: 9, h: 16, color: 0x1e293b },
@@ -395,21 +373,16 @@ const SolarCanvas3D = ({
         g.position.set(t.x, t.h / 2, t.z);
         group.add(g);
 
-        // Add solar arrays on rooftops
         addSolarArray(t.x - t.w / 2 + 1.5, t.z - t.d / 2 + 1.5, 3, 3, 1.8, 1.4, t.h + 0.2);
       });
 
-      // City street foliage
       addTree(-7, 7);
       addTree(7, 7);
       addTree(-7, -7);
       addTree(7, -7);
 
       totalRooftopArea = 145.0;
-    }
-
-    // SCENE 3: SUBURBAN RESIDENTIAL NEIGHBORHOOD
-    else if (scenePreset === "residential") {
+    } else if (scenePreset === "residential") {
       const houses = [
         { x: -14, z: -10 },
         { x: 0, z: -10 },
@@ -420,14 +393,12 @@ const SolarCanvas3D = ({
       ];
 
       houses.forEach((h) => {
-        // House Base
         const base = new THREE.Mesh(new THREE.BoxGeometry(9, 4.5, 9), getBuildingMat(0x334155));
         base.position.set(h.x, 2.25, h.z);
         base.castShadow = true;
         base.receiveShadow = true;
         group.add(base);
 
-        // Pitched Gabled Roof
         const roof = new THREE.Mesh(new THREE.ConeGeometry(7.2, 3.8, 4), getBuildingMat(0x0f172a));
         roof.position.set(h.x, 6.2, h.z);
         roof.rotation.y = Math.PI / 4;
@@ -435,19 +406,12 @@ const SolarCanvas3D = ({
         roof.receiveShadow = true;
         group.add(roof);
 
-        // South-Facing Sloped Solar Array
         addSolarArray(h.x - 2.8, h.z, 2, 3, 1.6, 1.2, 5.4, -0.45);
-
-        // Trees per yard
         addTree(h.x + 6, h.z + 5, 0.9);
       });
 
       totalRooftopArea = 128.0;
-    }
-
-    // SCENE 4: UTILITY SOLAR FARM & SUBSTATION GRID
-    else {
-      // 32 Dual-Axis Solar Tracker Tables
+    } else {
       for (let x = -24; x <= 24; x += 8) {
         for (let z = -20; z <= 20; z += 8) {
           const leg = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.15, 1.6, 8), getBuildingMat(0x94a3b8));
@@ -466,7 +430,6 @@ const SolarCanvas3D = ({
         }
       }
 
-      // Central Grid Inverter Substation
       const sub = new THREE.Mesh(new THREE.BoxGeometry(6, 3.5, 8), getBuildingMat(0x475569));
       sub.position.set(0, 1.75, 28);
       sub.castShadow = true;
@@ -489,29 +452,60 @@ const SolarCanvas3D = ({
   };
 
   return (
-    <div className="relative w-full h-full">
-      <div ref={mountRef} className="w-full h-full cursor-grab active:cursor-grabbing" />
+    <div style={{ position: "relative", width: "100%", height: "100%" }}>
+      <div ref={mountRef} style={{ width: "100%", height: "100%", cursor: "grab" }} />
 
-      {/* Camera View Angle Buttons */}
-      <div className="absolute top-20 left-1/2 -translate-x-1/2 z-20 glass-panel p-1 rounded-2xl flex items-center gap-1 font-mono text-[11px] hidden sm:flex shadow-xl">
+      <div style={{
+        position: "absolute",
+        top: "20px",
+        left: "50%",
+        transform: "translateX(-50%)",
+        zIndex: 20,
+        display: "flex",
+        alignItems: "center",
+        gap: "6px",
+        background: "rgba(9, 13, 22, 0.75)",
+        backdropFilter: "blur(16px)",
+        border: "1px solid rgba(255, 255, 255, 0.12)",
+        padding: "4px",
+        borderRadius: "9999px"
+      }}>
         {CAMERA_PRESETS.map((p) => (
           <button
             key={p.id}
             onClick={() => handleSetPreset(p)}
-            className={`px-3.5 py-1.5 rounded-xl transition-all font-bold ${
-              activeCamPreset === p.id
-                ? "bg-amber-400 text-black shadow"
-                : "text-zinc-400 hover:text-white hover:bg-white/5"
-            }`}>
+            style={{
+              padding: "6px 14px",
+              borderRadius: "9999px",
+              border: "none",
+              background: activeCamPreset === p.id ? "#f59e0b" : "transparent",
+              color: activeCamPreset === p.id ? "#000000" : "#94a3b8",
+              fontWeight: 700,
+              fontSize: "0.78rem",
+              cursor: "pointer",
+              transition: "all 0.2s"
+            }}>
             {p.label}
           </button>
         ))}
       </div>
 
-      {/* Orbit Tip Overlay */}
-      <div className="absolute bottom-4 left-4 z-10 glass-panel-subtle px-3.5 py-2 rounded-2xl font-mono text-[11px] text-zinc-300 pointer-events-none flex items-center gap-2.5 shadow-md">
-        <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
-        <span><strong>Left-Click:</strong> Orbit 3D • <strong>Right-Click:</strong> Pan Map • <strong>Scroll:</strong> Zoom</span>
+      <div style={{
+        position: "absolute",
+        bottom: "16px",
+        left: "16px",
+        zIndex: 10,
+        background: "rgba(9, 13, 22, 0.75)",
+        backdropFilter: "blur(16px)",
+        border: "1px solid rgba(255, 255, 255, 0.08)",
+        padding: "8px 16px",
+        borderRadius: "12px",
+        fontSize: "0.75rem",
+        color: "#94a3b8",
+        pointerEvents: "none",
+        fontFamily: "monospace"
+      }}>
+        <strong style={{ color: "#f59e0b" }}>Left-Click:</strong> Orbit • <strong style={{ color: "#f59e0b" }}>Right-Click:</strong> Pan • <strong style={{ color: "#f59e0b" }}>Scroll:</strong> Zoom
       </div>
     </div>
   );

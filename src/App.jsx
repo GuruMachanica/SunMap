@@ -1,19 +1,18 @@
 import React, { useState, useMemo } from 'react';
-import Navbar from './components_mohnish/sections/Navbar';
-import HeroSection from './components_mohnish/sections/HeroSection';
-import MetricsStrip from './components_mohnish/sections/MetricsStrip';
-import HowItWorks from './components_mohnish/sections/HowItWorks';
-import SavingsCalculator from './components_mohnish/sections/SavingsCalculator';
-import TechGrid from './components_mohnish/sections/TechGrid';
-import Testimonials from './components_mohnish/sections/Testimonials';
-import FinalCta from './components_mohnish/sections/FinalCta';
-import Footer from './components_mohnish/sections/Footer';
-import QuoteModal from './components_mohnish/ui/QuoteModal';
+import Navbar from './components/sections/Navbar';
+import HeroSection from './components/sections/HeroSection';
+import MetricsStrip from './components/sections/MetricsStrip';
+import HowItWorks from './components/sections/HowItWorks';
+import SavingsCalculator from './components/sections/SavingsCalculator';
+import TechGrid from './components/sections/TechGrid';
+import Testimonials from './components/sections/Testimonials';
+import FinalCta from './components/sections/FinalCta';
+import Footer from './components/sections/Footer';
+import QuoteModal from './components/ui/QuoteModal';
 
 // High-precision Studio and Feasibility Modals
 import StudioPage from './pages/StudioPage';
-import ReportModal from './components/ReportModal';
-import SimulationVideoPlayer from './components/SimulationVideoPlayer';
+import ReportModal from './components/studio/ReportModal';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('home');
@@ -77,27 +76,22 @@ export default function App() {
           {/* 3. Social Proof / Metrics Ribbon */}
           <MetricsStrip />
 
-          {/* 4. High-Fidelity 3D Simulation Video Showcase */}
-          <div style={{ maxWidth: '1200px', margin: '60px auto', padding: '0 24px' }}>
-            <SimulationVideoPlayer />
-          </div>
-
-          {/* 5. How It Works (3-Step Interactive Process) */}
+          {/* 4. How It Works (3-Step Interactive Process) */}
           <HowItWorks />
 
-          {/* 6. Savings & ROI Calculator (Interactive Slider Widget) */}
+          {/* 5. Savings & ROI Calculator (Interactive Slider Widget) */}
           <SavingsCalculator onOpenQuote={handleOpenQuote} />
 
-          {/* 7. Technology & Smart Controller Features (Bento Grid) */}
+          {/* 6. Technology & Smart Controller Features (Bento Grid) */}
           <TechGrid />
 
-          {/* 8. Case Studies / Customer Testimonials */}
+          {/* 7. Case Studies / Customer Testimonials */}
           <Testimonials />
 
-          {/* 9. Final CTA & Lead Capture */}
+          {/* 8. Final CTA & Lead Capture */}
           <FinalCta onOpenQuote={handleOpenQuote} onLaunchStudio={handleLaunchStudio} />
 
-          {/* 10. Footer */}
+          {/* 9. Footer */}
           <Footer setActiveTab={setActiveTab} onOpenReport={() => setReportModalOpen(true)} />
         </main>
       ) : (

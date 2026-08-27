@@ -1,8 +1,8 @@
 import React from "react";
-import SolarCanvas3D from "../components/SolarCanvas3D";
-import SolarControls from "../components/SolarControls";
-import AnalyticsPanel from "../components/AnalyticsPanel";
-import { FaArrowLeft } from "react-icons/fa";
+import SolarCanvas3D from "../components/studio/SolarCanvas3D";
+import SolarControls from "../components/studio/SolarControls";
+import AnalyticsPanel from "../components/studio/AnalyticsPanel";
+import { ArrowLeft } from "lucide-react";
 
 const StudioPage = ({
   timeOfDay,
@@ -25,9 +25,8 @@ const StudioPage = ({
   setPanelTilt
 }) => {
   return (
-    <div className="relative w-full h-full pt-16 flex flex-col overflow-hidden select-none">
-      {/* 3D WebGL Canvas */}
-      <div className="relative flex-1 w-full h-full">
+    <div style={{ position: "relative", width: "100%", height: "100vh", paddingTop: "76px", overflow: "hidden", userSelect: "none" }}>
+      <div style={{ position: "relative", width: "100%", height: "100%" }}>
         <SolarCanvas3D
           elevation={elevation}
           azimuth={azimuth}
@@ -37,16 +36,33 @@ const StudioPage = ({
           panelTilt={panelTilt}
         />
 
-        {/* Back to Overview Floating Button */}
         <button
           onClick={onBackToHome}
-          className="absolute top-4 left-4 z-20 glass-panel px-3.5 py-2 rounded-2xl font-mono text-[12px] font-bold text-zinc-300 hover:text-white flex items-center gap-2 hover:border-amber-500/40 transition-colors shadow-lg">
-          <FaArrowLeft className="w-3 h-3 text-amber-400" />
-          <span>OVERVIEW</span>
+          style={{
+            position: "absolute",
+            top: "16px",
+            left: "16px",
+            zIndex: 20,
+            display: "flex",
+            alignItems: "center",
+            gap: "8px",
+            background: "rgba(9, 13, 22, 0.8)",
+            backdropFilter: "blur(16px)",
+            border: "1px solid rgba(255, 255, 255, 0.12)",
+            color: "#ffffff",
+            padding: "8px 16px",
+            borderRadius: "14px",
+            fontFamily: "monospace",
+            fontWeight: 700,
+            fontSize: "0.8rem",
+            cursor: "pointer",
+            boxShadow: "0 10px 30px rgba(0,0,0,0.5)"
+          }}>
+          <ArrowLeft size={14} color="#f59e0b" />
+          <span>BACK TO OVERVIEW</span>
         </button>
 
-        {/* Floating Left Celestial Control Panel */}
-        <div className="absolute top-16 left-4 z-20 w-80 sm:w-96 max-w-[calc(100vw-32px)] pointer-events-auto">
+        <div style={{ position: "absolute", top: "70px", left: "16px", zIndex: 20, width: "380px", maxWidth: "calc(100vw - 32px)" }}>
           <SolarControls
             timeOfDay={timeOfDay}
             setTimeOfDay={setTimeOfDay}
@@ -65,8 +81,7 @@ const StudioPage = ({
           />
         </div>
 
-        {/* Floating Right Analytics Panel */}
-        <div className="absolute top-16 right-4 z-20 w-80 sm:w-96 max-w-[calc(100vw-32px)] pointer-events-auto hidden md:block">
+        <div style={{ position: "absolute", top: "70px", right: "16px", zIndex: 20, width: "360px", maxWidth: "calc(100vw - 32px)" }}>
           <AnalyticsPanel
             irradiance={baseIrradiance}
             rooftopArea={meshStats.totalRooftopArea}

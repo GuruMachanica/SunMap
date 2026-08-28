@@ -1,20 +1,14 @@
 import pickle
-import irr
 import argparse
 import numpy as np
+try:
+    import irr
+except ImportError:
+    try:
+        from . import irr
+    except Exception:
+        irr = None
 
-#-- Parse command-line arguments
-PARSER = argparse.ArgumentParser(description='Estimate the tilt and orientation factor (TOF) for the annual insolation.')
-PARSER.add_argument('-lat', '--latitude',
-	help='latitude of the place', required=False)
-PARSER.add_argument('-lon', '--longitude',
-	help='longitude of the place', required=False)
-PARSER.add_argument('-f', '--factors',
-	help='Load the TOF if previously precomputed', required=False)
-PARSER.add_argument('-s', '--step',
-	help='Resolution of the computations.', required=False)
-PARSER.add_argument('-p', '--plot',
-    help='Plot the TOFs.', required=False)
 
 def argRead(ar, default=None):
     """Corrects the argument input in case it is not in the format True/False."""
@@ -31,150 +25,94 @@ def argRead(ar, default=None):
         raise ValueError("Argument value not recognised.")
     return ar
 
-ARGS = vars(PARSER.parse_args())
-LATITUDE = ARGS['latitude']
-LONGITUDE = ARGS['longitude']
-FACTORS = ARGS['factors']
-STEP = ARGS['step']
-PLOT = argRead(ARGS['plot'], False)
+def compute_tof(place=(52.01, 4.36), factors=None, step=15.0, plot=False):
+    """Calculate tilt and orientation factors."""
+    loadDict = bool(factors)
+    step = float(step) if step else 15.0
 
-#-- Place [lat, lon]
-if LATITUDE and LONGITUDE:
-	PLACE = (float(LATITUDE), float(LONGITUDE))
-else:
-	PLACE = (52.01, 4.36)
+    asteps = int(360.0 / step)
+    tsteps = int(90.0 / step)
+    azimuths = np.linspace(0.0, 360.0, asteps + 1)
+    tilts = np.linspace(0.0, 90.0, tsteps + 1)
 
-#-- Load the pre-computed TOF dictionary
-if not FACTORS:
-	loadDict = False
-else:
-	loadDict = True
+    if loadDict:
+        with open(factors, "rb") as myFile:
+            TOF = pickle.load(myFile)
+    else:
+        TOF = {}
+        for az in azimuths:
+            TOF[str(az)] = {}
+            for tr in tilts:
+                total = irr.yearly_total_irr(place, az, tr)
+                TOF[str(az)][str(tr)] = total
+                print(f"Azimuth: {az}\tTilt: {tr}\tIrradiation: {total} kWh/m^2")
 
-#-- Azimuth-tilt-step in degrees
-if STEP:
-	STEP = float(STEP)
-else:
-	STEP = 15.0
+        if TOF:
+            with open('TOF.dict', 'wb') as dict_items_save:
+                pickle.dump(TOF, dict_items_save)
 
-asteps = int(360.0 / STEP)
-tsteps = int(90.0 / STEP)
-azimuths = np.linspace(0.0, 360.0, asteps + 1)
-tilts = np.linspace(0.0, 90.0, tsteps + 1)
+    if plot:
+        import matplotlib.pyplot as plt
+        from scipy.interpolate import griddata
 
-#-- If the TOFs are already precomputed
-if loadDict:
-    with open(FACTORS, "rb") as myFile:
-        TOF = pickle.load(myFile)
+        plt.rc('text', usetex=False)
+        plt.rc('font', family='serif')
 
-else:
-	#-- Create the dictionary
-    TOF = {}
+        irrTOFa = []
+        irrTOFt = []
+        irrTOFi = []
+        for azimuth in TOF:
+            for tilt in TOF[azimuth]:
+                radiationAmount = TOF[azimuth][tilt]
+                irrTOFa.append(float(azimuth))
+                irrTOFt.append(float(tilt))
+                irrTOFi.append(float(radiationAmount))
 
-    #-- For each azimuth
-    for az in azimuths:
+        plt.figure(1)
+        xi = np.linspace(90, 270, 180)
+        yi = np.linspace(0, 90, 90)
+        zi = griddata((irrTOFa, irrTOFt), irrTOFi, (xi[None, :], yi[:, None]), method='nearest')
 
-    	#-- Open a sub-dictionary
-        TOF[str(az)] = {}
+        vmin = 600.0
+        vmax = 1250.0
 
-        #-- For each tilt
-        for tr in tilts:
-        	#-- Get the total yearly solar irradiation
-            total = irr.yearly_total_irr(PLACE, az, tr)#, INTERVAL, cloud_cover)
-            #-- Store it in the dictionary
-            TOF[str(az)][str(tr)] = total
-            #-- Print the progress
-            print("Azimuth:", az, "\tTilt:", tr, "\tIrradiation:", total, "kWh/m^2")
+        origin = 'lower'
+        cmap = plt.cm.get_cmap("afmhot")
+        CSF = plt.contourf(xi, yi, zi, 25, cmap=cmap, origin=origin, vmin=vmin, vmax=vmax)
+        CS = plt.contour(xi, yi, zi, 25, origin=origin, linewidths=.25, colors='k')
+        plt.axes().set_aspect('equal')
+        plt.xticks(np.arange(90.0, 270.01, 10.0))
+        plt.tick_params(axis='both', which='major', labelsize=9)
+        plt.clabel(CS, inline=1, fontsize=7, colors='k', fmt='%1.0f')
+        plt.xlim(90, 270)
+        plt.ylim(0, 90)
 
-    #-- Store the obtained values to save time later
-    if TOF:
-        with open('TOF.dict', 'wb') as dict_items_save:
-            pickle.dump(TOF, dict_items_save)
+        ttl = "Global solar irradiation on a tilted and oriented surface\nin Delft, the Netherlands (N52.01, E4.36)"
+        plt.title(ttl, fontsize=12)
+        plt.xlabel("Azimuth [deg]", fontsize=11)
+        plt.ylabel("Tilt [deg]", fontsize=11)
+        cbar = plt.colorbar(CSF, shrink=0.55)
+        cbar.ax.set_ylabel("Annual solar irradiation [kWh/m2/yr]", fontsize=11)
+        plt.savefig('TOF-plot.pdf', bbox_inches='tight')
+        plt.show()
 
+    return TOF
 
-if PLOT:
-    #-- Plotting time!
-    import matplotlib as mpl
-    #from matplotlib import rc
-    import matplotlib.pyplot as plt
-    from scipy.interpolate import griddata
+def main():
+    parser = argparse.ArgumentParser(description='Estimate the tilt and orientation factor (TOF) for the annual insolation.')
+    parser.add_argument('-lat', '--latitude', help='latitude of the place', required=False)
+    parser.add_argument('-lon', '--longitude', help='longitude of the place', required=False)
+    parser.add_argument('-f', '--factors', help='Load the TOF if previously precomputed', required=False)
+    parser.add_argument('-s', '--step', help='Resolution of the computations.', required=False)
+    parser.add_argument('-p', '--plot', help='Plot the TOFs.', required=False)
 
-    plt.rc('text', usetex=False)
-    plt.rc('font', family='serif')
+    args = vars(parser.parse_args())
+    lat = args['latitude']
+    lon = args['longitude']
+    place = (float(lat), float(lon)) if lat and lon else (52.01, 4.36)
+    plot = argRead(args['plot'], False)
 
-    #-- Organise the data for plotting
-    irrTOFa = []
-    irrTOFt = []
-    irrTOFi = []
-    for azimuth in TOF:
-        for tilt in TOF[azimuth]:
-            radiationAmount = TOF[azimuth][tilt]
-            irrTOFa.append(azimuth)
-            irrTOFt.append(tilt)
-            irrTOFi.append(radiationAmount)
+    compute_tof(place=place, factors=args['factors'], step=args['step'], plot=plot)
 
-    #-- First figure (with 90-270 azimuths)
-    fig1 = plt.figure(1)
-
-
-    xi = np.linspace(90, 270, 180)
-    yi = np.linspace(0, 90, 90)
-    zi = griddata((irrTOFa, irrTOFt), irrTOFi, (xi[None,:], yi[:,None]), method='nearest')
-
-    vmin = 600.0
-    vmax = 1250.0
-
-    import seaborn as sns
-    sns.set(style="white", font='serif', rc={'axes.facecolor': '#FFFFFF', 'grid.linestyle': '', 'axes.grid' : False, 'font.family': ['serif'], 'legend.frameon': True})
-
-    origin = 'lower'
-    cmap = plt.cm.get_cmap("afmhot")# Blues
-    CSF = plt.contourf(xi, yi, zi, 25, cmap=cmap, origin=origin, vmin=vmin, vmax=vmax)#, 15, linewidths = 0.5, colors = 'k')
-    CS = plt.contour(xi, yi, zi, 25, origin=origin, linewidths=.25, colors='k')
-    plt.axes().set_aspect('equal') # ,'datalim'
-    plt.xticks(np.arange(90.0, 270.01, 10.0))
-    plt.tick_params(axis='both', which='major', labelsize=9)
-    plt.clabel(CS, inline=1, fontsize=7, colors='k', fmt='%1.0f') #CS.levels[::2],
-    plt.xlim(90, 270)
-    plt.ylim(0, 90)
-
-    ttl = r"Global solar irradiation on a tilted and oriented surface"
-    ttl += "\n"
-    ttl += r"in Delft, the Netherlands (N52.01$^{\circ}$, E4.36$^{\circ}$)"
-    xl = r"Azimuth [$^{\circ}$]"
-    yl = r"Tilt [$^{\circ}$]"
-    cbtl = r"Annual solar irradiation [kWh/m$^{2}$/yr]"
-    plt.title(ttl, fontsize=12)
-    plt.xlabel(xl, fontsize=11)
-    plt.ylabel(yl, fontsize=11)
-    cbar = plt.colorbar(CSF, shrink=0.55)
-    cbar.ax.set_ylabel(cbtl, fontsize=11)
-    # labels = [item.get_text() for item in CS.ax.get_xticklabels()]
-    # print labels
-    # labels = [item.get_text() for item in plt.axes().get_xticklabels()]
-    # print labels
-    # labels = [item.get_text() for item in CSF.ax.get_xticklabels()]
-    # print labels
-    # labels[0] = str(labels[-1]) + '\n' + 'E'
-    # labels[-1] = str(labels[-1]) + '\n' + 'W'
-    # CS.ax.set_xticklabels(labels)
-    plt.savefig('TOF-plot.pdf', bbox_inches='tight')
-    plt.show()
-
-    # #-- Second figure (with 0-360 azimuths)
-    # plt.figure(2)
-
-    # xi = np.linspace(0, 360, 360)
-    # yi = np.linspace(0, 90, 90)
-    # zi = ml.griddata(irrTOFa, irrTOFt, irrTOFi, xi, yi)
-
-    # CS = plt.contour(xi, yi, zi, 20)#, 15, linewidths = 0.5, colors = 'k')
-    # plt.axes().set_aspect('equal') # ,'datalim'
-    # plt.xticks(np.arange(0, 360, 25.0))
-    # plt.clabel(CS, inline=3, fontsize=10, fmt='%1.0f')
-    # plt.xlim(0, 360)
-    # plt.ylim(0, 90)
-    # plt.title(ttl, fontsize=14)
-    # plt.xlabel(xl, fontsize=12)
-    # plt.ylabel(yl, fontsize=12)
-    # plt.savefig('TOF-plot-360.pdf', bbox_inches='tight')
-    # plt.show()
+if __name__ == '__main__':
+    main()

@@ -167,7 +167,21 @@ Open `http://localhost:5175` in your browser.
 
 ---
 
-### 2. Docker Multi-Container Deployment
+### 2. Unified Single-Deployment (FastAPI + React 3D Studio in One Container)
+
+```bash
+# Build and run unified single deployment on port 8000
+docker build -t sunmap-unified:latest .
+docker run -p 8000:8000 sunmap-unified:latest
+```
+
+* **Live 3D Studio & Web Application:** `http://localhost:8000/`
+* **FastAPI Interactive OpenAPI Docs:** `http://localhost:8000/docs`
+* **Health & Telemetry Check:** `http://localhost:8000/api/health`
+
+---
+
+### 3. Docker Multi-Container Deployment
 
 ```bash
 # Build and run production containers in background
@@ -178,7 +192,7 @@ docker compose ps
 ```
 
 * **Frontend Web Application:** `http://localhost:5175` (or port `80`)
-* **Backend Spatial Service:** `http://localhost:8000`
+* **Backend FastAPI Service:** `http://localhost:8000` (API & Swagger at `http://localhost:8000/docs`)
 
 ---
 

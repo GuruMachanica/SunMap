@@ -51,38 +51,20 @@ nsmap = {
     'dem' : ns_dem
 }
 
-#-- ARGUMENTS
-# -i -- input directory (it will read ALL CityGML files in a directory)
-# -o -- output directory (it will output the enriched CityGMLs in that directory with the naming convention Delft.gml becomes Delft-solar.gml)
-# -f -- factors (precomputed tilt-orientation-factors)
-PARSER = argparse.ArgumentParser(description='Calculate the yearly solar irradiation of roof surfaces.')
-PARSER.add_argument('-i', '--directory',
-    help='Directory containing CityGML file(s).', required=True)
-PARSER.add_argument('-o', '--results',
-    help='Directory where the enriched "solar" CityGML file(s) should be written.', required=True)
-PARSER.add_argument('-f', '--factors',
-    help='Load the TOF if previously precomputed', required=False)
-ARGS = vars(PARSER.parse_args())
-DIRECTORY = ARGS['directory']
-RESULT = ARGS['results']
-FACTORS = ARGS['factors']
-#-- Load the pre-computed dictionary
-if not FACTORS:
-    loadDict = False
-else:
-    loadDict = True
+TOF = None
+res = 1.0
 
-
-#-- If the TOFs are already precomputed
-if loadDict:
-    with open(FACTORS, "rb") as myFile:
+def load_tof_factors(factors_path):
+    global TOF, res
+    if not factors_path or not os.path.exists(factors_path):
+        return None, 1.0
+    with open(factors_path, "rb") as myFile:
         try:
             TOF_strings = pickle.load(myFile, encoding='latin1')
         except Exception:
             myFile.seek(0)
             TOF_strings = pickle.load(myFile)
     TOF = {}
-
     for azStr in TOF_strings:
         azFloat = round(float(azStr), 2)
         TOF[azFloat] = {}
@@ -90,10 +72,8 @@ if loadDict:
             tiFloat = round(float(tiStr), 2)
             TOF[azFloat][tiFloat] = float(TOF_strings[azStr][tiStr])
     TS = sorted(TOF)
-    res = TS[1]-TS[0]
-
-else:
-    pass#import knmicloud
+    res = TS[1] - TS[0] if len(TS) > 1 else 1.0
+    return TOF, res
 
 
 def squareVerts(a,t,res):
@@ -336,94 +316,103 @@ def oparea(xmlelement):
     return openingarea  
 
 
-print("I am SunMap. Let me search for your CityGML files...")
+def process_citygml_directory(directory, result_dir, factors_path=None):
+    if factors_path:
+        load_tof_factors(factors_path)
 
-#-- Find all CityGML files in the directory
-for f in glob.glob(os.path.join(DIRECTORY, "*.gml")):
-    FILENAME = os.path.basename(f)[:os.path.basename(f).rfind('.')]
-    FULLPATH = f
+    print("I am SunMap. Let me search for your CityGML files...")
+    #-- Find all CityGML files in the directory
+    for f in glob.glob(os.path.join(directory, "*.gml")):
+        FILENAME = os.path.basename(f)[:os.path.basename(f).rfind('.')]
+        FULLPATH = f
 
-    CITYGML = etree.parse(FULLPATH)
-    root = CITYGML.getroot()
-    cityObjects = []
-    buildings = []
+        CITYGML = etree.parse(FULLPATH)
+        root = CITYGML.getroot()
+        cityObjects = []
+        buildings = []
 
-    listofxmlroofsurfaces = []
-    roofsurfacedata = {}
+        listofxmlroofsurfaces = []
+        roofsurfacedata = {}
 
-    #-- Find all instances of cityObjectMember and put them in a list
-    for obj in get_iter(root, '{%s}cityObjectMember'% ns_citygml):
-        cityObjects.append(obj)
+        #-- Find all instances of cityObjectMember and put them in a list
+        for obj in get_iter(root, '{%s}cityObjectMember' % ns_citygml):
+            cityObjects.append(obj)
 
-    print(FILENAME)
-    print("\tThere are", len(cityObjects), "cityObject(s) in this CityGML file")
+        print(FILENAME)
+        print("\tThere are", len(cityObjects), "cityObject(s) in this CityGML file")
 
-    for cityObject in cityObjects:
-        for child in get_children(cityObject):
-            if child.tag == '{%s}Building' %ns_bldg:
-                buildings.append(child)
+        for cityObject in cityObjects:
+            for child in get_children(cityObject):
+                if child.tag == '{%s}Building' % ns_bldg:
+                    buildings.append(child)
 
-    #-- Store the buildings as classes
-    buildingclasses = []
-    for b in buildings:
-        id = b.attrib['{%s}id' %ns_gml]
-        buildingclasses.append(Building(b, id))
-
-    print("\tI have read all buildings, now I will search for roofs and estimate their solar irradiation...")
-
-    #-- Store the obtained data in a dictionary
-    solardata = {}
-
-    #-- Check if there are roof surfaces in the file
-    rsc = 0
-
-    #-- Iterate all buildings
-    for bu in buildingclasses:
-        solardata[bu.id] = {'roofarea' : bu.roofarea(), 'totalIrradiation' : bu.sumIrr}
-        rsc += bu.RoofSurfaceArea
-
-    if rsc > 0:
-
-        print('\tEnriching CityGML file with the solar irradiation data...')
-
-        for rsxml in listofxmlroofsurfaces:
-            rsid = rsxml.attrib['{%s}id' %ns_gml]
-            s = etree.SubElement(rsxml, "area")
-            s.text = str(roofsurfacedata[rsid]['area'])
-            s.attrib['unit'] = 'm^2'
-            i = etree.SubElement(rsxml, "totalIrradiation")
-            i.text = str(roofsurfacedata[rsid]['total_irradiation'])
-            i.attrib['unit'] = 'kWh'
-            a = etree.SubElement(rsxml, "azimuth")
-            a.text = str(roofsurfacedata[rsid]['azimuth'])
-            a.attrib['unit'] = 'degree'
-            t = etree.SubElement(rsxml, "tilt")
-            t.text = str(roofsurfacedata[rsid]['tilt'])
-            t.attrib['unit'] = 'degree'
-            ni = etree.SubElement(rsxml, "irradiation")
-            ni.text = str(roofsurfacedata[rsid]['irradiation'])
-            ni.attrib['unit'] = 'kWh/m^2'
-
-
-
+        #-- Store the buildings as classes
+        buildingclasses = []
         for b in buildings:
-            bid = b.attrib['{%s}id' %ns_gml]
-            s = etree.SubElement(b, "roofArea")
-            s.text = str(solardata[bid]['roofarea'])
-            s.attrib['unit'] = 'm^2'
-            i = etree.SubElement(b, "yearlyIrradiation")
-            i.text = str(solardata[bid]['totalIrradiation'])
-            i.attrib['unit'] = 'kWh'
+            bid = b.attrib['{%s}id' % ns_gml]
+            buildingclasses.append(Building(b, bid))
 
+        print("\tI have read all buildings, now I will search for roofs and estimate their solar irradiation...")
 
-        os.makedirs(RESULT, exist_ok=True)
-        output_file = os.path.join(RESULT, FILENAME + '-solar.gml')
-        with open(output_file, 'wb') as f:
+        #-- Store the obtained data in a dictionary
+        solardata = {}
+
+        #-- Check if there are roof surfaces in the file
+        rsc = 0
+
+        #-- Iterate all buildings
+        for bu in buildingclasses:
+            solardata[bu.id] = {'roofarea': bu.roofarea(), 'totalIrradiation': bu.sumIrr}
+            rsc += bu.RoofSurfaceArea
+
+        if rsc > 0:
+            print('\tEnriching CityGML file with the solar irradiation data...')
+
+            for rsxml in listofxmlroofsurfaces:
+                rsid = rsxml.attrib['{%s}id' % ns_gml]
+                s = etree.SubElement(rsxml, "area")
+                s.text = str(roofsurfacedata[rsid]['area'])
+                s.attrib['unit'] = 'm^2'
+                i = etree.SubElement(rsxml, "totalIrradiation")
+                i.text = str(roofsurfacedata[rsid]['total_irradiation'])
+                i.attrib['unit'] = 'kWh'
+                a = etree.SubElement(rsxml, "azimuth")
+                a.text = str(roofsurfacedata[rsid]['azimuth'])
+                a.attrib['unit'] = 'degree'
+                t = etree.SubElement(rsxml, "tilt")
+                t.text = str(roofsurfacedata[rsid]['tilt'])
+                t.attrib['unit'] = 'degree'
+                ni = etree.SubElement(rsxml, "irradiation")
+                ni.text = str(roofsurfacedata[rsid]['irradiation'])
+                ni.attrib['unit'] = 'kWh/m^2'
+
+            for b in buildings:
+                bid = b.attrib['{%s}id' % ns_gml]
+                s = etree.SubElement(b, "roofArea")
+                s.text = str(solardata[bid]['roofarea'])
+                s.attrib['unit'] = 'm^2'
+                i = etree.SubElement(b, "yearlyIrradiation")
+                i.text = str(solardata[bid]['totalIrradiation'])
+                i.attrib['unit'] = 'kWh'
+
+            os.makedirs(result_dir, exist_ok=True)
+            output_file = os.path.join(result_dir, FILENAME + '-solar.gml')
+            with open(output_file, 'wb') as f:
                 f.write(etree.tostring(root))
 
-        print("\tFile written.")
+            print("\tFile written.")
+        else:
+            print("\tI am afraid I did not find any RoofSurface in your CityGML file.")
 
-    else:
-        print("\tI am afraid I did not find any RoofSurface in your CityGML file.")
+    print("All done.")
 
-print("All done.")
+def main():
+    parser = argparse.ArgumentParser(description='Calculate the yearly solar irradiation of roof surfaces.')
+    parser.add_argument('-i', '--directory', help='Directory containing CityGML file(s).', required=True)
+    parser.add_argument('-o', '--results', help='Directory where the enriched "solar" CityGML file(s) should be written.', required=True)
+    parser.add_argument('-f', '--factors', help='Load the TOF if previously precomputed', required=False)
+    args = vars(parser.parse_args())
+    process_citygml_directory(args['directory'], args['results'], args['factors'])
+
+if __name__ == '__main__':
+    main()

@@ -179,7 +179,11 @@ for idx, (sx, sy, sz) in enumerate(shrub_coords):
     shrub.data.materials.append(mat_hedge)
 
 # Export to GLB
-output_path = r"D:\Games\SunMap_Final\public\models\house.glb"
+script_dir = os.path.dirname(os.path.abspath(__file__)) if '__file__' in locals() else os.getcwd()
+output_dir = os.path.abspath(os.path.join(script_dir, "..", "Frontend", "public", "models"))
+os.makedirs(output_dir, exist_ok=True)
+output_path = os.path.join(output_dir, "house.glb")
+
 bpy.ops.export_scene.gltf(
     filepath=output_path,
     export_format='GLB',
@@ -189,3 +193,4 @@ bpy.ops.export_scene.gltf(
 )
 
 print("SUCCESS: Photorealistic suburban homestead exported to:", output_path)
+

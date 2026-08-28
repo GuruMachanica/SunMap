@@ -53,10 +53,14 @@ nsmap = {
 
 TOF = None
 res = 1.0
+loadDict = False
+listofxmlroofsurfaces = []
+roofsurfacedata = {}
 
 def load_tof_factors(factors_path):
-    global TOF, res
+    global TOF, res, loadDict
     if not factors_path or not os.path.exists(factors_path):
+        loadDict = False
         return None, 1.0
     with open(factors_path, "rb") as myFile:
         try:
@@ -73,7 +77,9 @@ def load_tof_factors(factors_path):
             TOF[azFloat][tiFloat] = float(TOF_strings[azStr][tiStr])
     TS = sorted(TOF)
     res = TS[1] - TS[0] if len(TS) > 1 else 1.0
+    loadDict = True
     return TOF, res
+
 
 
 def squareVerts(a,t,res):

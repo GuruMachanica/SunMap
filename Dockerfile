@@ -40,9 +40,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY Backend/requirements.txt ./Backend/
 RUN pip install --no-cache-dir -r ./Backend/requirements.txt
 
-# Copy Backend application and Datasets
+# Copy Backend application and datasets
 COPY Backend/ ./Backend/
-COPY Datasets/ ./Datasets/
+COPY datasets/ ./datasets/
+
 
 # Copy compiled Frontend distribution from builder
 COPY --from=frontend-builder /app/Frontend/dist ./Frontend/dist

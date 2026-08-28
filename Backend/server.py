@@ -178,10 +178,11 @@ def get_health():
 @app.get("/api/topologies", tags=["GIS Topologies"])
 def list_topologies():
     """Return all available 3D CityGML LOD2 urban topologies."""
-    # Attempt loading from datasets directory
     dataset_paths = [
-        os.path.join(DATASETS_DIR, "topologies_dataset.json"),
-        os.path.join(ROOT_DIR, "Frontend", "src", "datasets", "topologies_dataset.json")
+        os.path.join(ROOT_DIR, "datasets", "topologies_dataset.json"),
+        os.path.join(ROOT_DIR, "Datasets", "topologies_dataset.json"),
+        os.path.join(ROOT_DIR, "Frontend", "src", "datasets", "topologies_dataset.json"),
+        os.path.join(CURRENT_DIR, "..", "datasets", "topologies_dataset.json")
     ]
     for path in dataset_paths:
         if os.path.exists(path):
@@ -189,6 +190,7 @@ def list_topologies():
                 return json.load(f)
     
     raise HTTPException(status_code=404, detail="Topologies dataset not found.")
+
 
 @app.get("/api/topologies/{topology_id}", tags=["GIS Topologies"])
 def get_topology(topology_id: str):
